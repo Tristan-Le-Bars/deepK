@@ -1,23 +1,17 @@
 #include <iostream>
+#include <bits/stdc++.h>
+#include <cmath>
 
 class ActivationFunctions{
     private:
-        std::string function;
     public:
         // Constructors
         ActivationFunctions(/* args */);
         ~ActivationFunctions();
-
-        // Seters
-        void SetFunction(std::string f){function = f;}
-
-        // Geters
-        std::string GetFunction(){return function;}
-
         // Methods
-        double Logistic(){}
-        double ReLU(){}
-        double Tanh(){}
+        double Logistic(double x){return (1/(1 + exp(-x)));}
+        double ReLU(double x){return std::max(x, 0.0);}
+        double Tanh(double x){return std::tanh(x);}
 };
 
 ActivationFunctions::ActivationFunctions(/* args */){}
