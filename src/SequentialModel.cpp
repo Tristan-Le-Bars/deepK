@@ -49,5 +49,4 @@ public:
         }
         neural_matrix.push_back(neurons);
     }
-
 };
