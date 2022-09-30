@@ -2,9 +2,11 @@
 #include <vector>
 #include <string>
 #include <random>
+#include <../headers/ActivationFunctions.hpp>
 
 class SequentialModel{
     private:
+        // Variables
         int layers_nbr;
         std::vector<std::vector<double>> neural_matrix;
         std::vector<std::vector<double>> synaptic_matrix;
@@ -12,26 +14,24 @@ class SequentialModel{
 
 
     public:
-        // Constructors
+        // Constructor
         SequentialModel(/* args */);
+        // Destructor
         ~SequentialModel();
 
-        // Methods
-        // AddLayer(int neurons_nbr, std::string activation_function);
 
-
-        // seters
+        // Seters
         void SetLayersNbr(int l){layers_nbr = l;};
         void SetNeuralMatrix(std::vector<std::vector<double>> n){neural_matrix = n;};
         void SetActivationFuntionMatrix(std::vector<std::string> a){activation_functions_matrix = a;};
 
 
-        // geters
+        // Geters
         int GetLayerNbr(){return layers_nbr;}
         std::vector<std::vector<double>> GetNeuralMatrix(){return neural_matrix;}
         std::vector<std::string> GetActivationFunctionMatrix(){return activation_functions_matrix;}
 
-        // methodes
+        // Methodes
         void AddLayer(int neurons_nbr, std::string activation_function) {
             std::vector<double> neurons(neurons_nbr, 0);
             std::vector<double> synapses;
