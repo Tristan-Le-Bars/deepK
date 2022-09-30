@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 #include <random>
+#include <numeric>
+
 #include <../headers/ActivationFunctions.hpp>
 
 class SequentialModel{
@@ -10,8 +12,28 @@ class SequentialModel{
         int layers_nbr;
         std::vector<std::vector<double>> neural_matrix;
         std::vector<std::vector<double>> synaptic_matrix;
+        std::vector<double> bias;
         std::vector<std::string> activation_functions_matrix;
 
+        void ForwardPropagation(double bias, int network_position){
+            ActivationFunctions activation_function = ActivationFunctions();
+            std::vector<double> weights = this->synaptic_matrix[network_position];
+            std::vector<double> inputs = this->neural_matrix[network_position]; 
+            std::string choosen_function = this->activation_functions_matrix[network_position];
+
+            std::vector<double> output = std::inner_product(weights.begin(), weights.end(), inputs.begin(), 0.0);
+
+            for(int i; i < output.size(); i++){
+                output[i] += bias;
+                if(choosen_function == "Logistic")
+                    output[i] = activation_function.Logistic(output[i]);
+                if(choosen_function == "ReLU")
+                    output[i] = activation_function.ReLU(output[i]);
+                if(choosen_function == "Tanh")
+                    output[i] = activation_function.Tanh(output[i]);
+            }
+            this->neural_matrix[network_position] = output;
+        }
 
     public:
         // Constructor
@@ -44,6 +66,8 @@ class SequentialModel{
                 }
             }
             neural_matrix.push_back(neurons);
+            
+            activation_functions_matrix.push_back(activation_function);
         }
 };
 
