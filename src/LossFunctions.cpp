@@ -13,10 +13,10 @@ public:
     ~LossFunctions();
 
     // Public methods
-    std::vector<double> MeanSquaredError(std::vector<double> label){
+    std::vector<double> MeanSquaredError(std::vector<double> label, std::vector<double> output_values){
         std::vector<double> loss;
-        for(int i; i < label; i++){
-            loss.push_back((label[i] - output_values[i]) * (label[i] - ouput_values[i]))
+        for(int i; i < label.size(); i++){
+            loss.push_back((label[i] - output_values[i]) * (label[i] - output_values[i]))
         }
         return loss;
     }
