@@ -17,13 +17,29 @@ class SequentialModel{
         std::vector<std::string> activation_functions_matrix;
         std::string loss_function;
 
-
         // Methods
+        double MatrixMultiplication(std::vector<double> first_matrix, std::vector<double> second_matrix){
+            int matrix_size = first_matrix.size();
+            std::vector<double> new_matrix(second_matrix);
+            double result = 0;
+
+            for(int i = 0; i < matrix_size; i++){
+                new_matrix.push_back(first_matrix[i] * second_matrix[i]);
+            }
+
+            for(int i = 0; i < new_matrix.size(); i++){
+                result += new_matrix[i];
+            }
+
+            return result;
+        }
+
         void ForwardPropagation(double bias, int network_position){
-            ActivationFunctions function = ActivationFunctions();
-            std::vector<double> weights = this->synaptic_matrix[network_position];
-            std::vector<double> inputs = this->neural_matrix[network_position]; 
-            std::string activation_function = this->activation_functions_matrix[network_position];
+            /*Weights and inputs matrix must be the same size*/
+            ActivationFunctions activation_function = ActivationFunctions();
+            std::vector<double> weights = synaptic_matrix[network_position];
+            std::vector<double> inputs = neural_matrix[network_position]; 
+            std::string choosen_function = activation_functions_matrix[network_position];
 
             std::vector<double> output = std::inner_product(weights.begin(), weights.end(), inputs.begin(), 0.0);
 
@@ -36,7 +52,7 @@ class SequentialModel{
                 if(activation_function == "Tanh")
                     output[i] = function.Tanh(output[i]);
             }
-            this->neural_matrix[network_position] = output;
+            neural_matrix[network_position] = output;
         }
 
         void BackwardPropagation(std::vector<double> labels){
