@@ -34,6 +34,23 @@ class SequentialModel{
             return result;
         }
 
+        // Methods
+        double MatrixMultiplication(std::vector<double> first_matrix, std::vector<double> second_matrix){
+            int matrix_size = first_matrix.size();
+            std::vector<double> new_matrix(second_matrix);
+            double result = 0;
+
+            for(int i = 0; i < matrix_size; i++){
+                new_matrix.push_back(first_matrix[i] * second_matrix[i]);
+            }
+
+            for(int i = 0; i < new_matrix.size(); i++){
+                result += new_matrix[i];
+            }
+
+            return result;
+        }
+
         void ForwardPropagation(double bias, int network_position){
             /*Weights and inputs matrix must be the same size*/
             ActivationFunctions activation_function = ActivationFunctions();
@@ -77,6 +94,10 @@ class SequentialModel{
                 if(this->activation_functions_matrix[i] == "Tanh")
                     // matrix product of ouput x synaptic weight * derivated function of the neurones values 
             }
+<<<<<<< HEAD
+=======
+            neural_matrix[network_position] = output;
+>>>>>>> b45f19d ([ADD] - adding the matrix multiplication method in the sequentialModel object)
         }
 
     public:
