@@ -10,9 +10,10 @@
 class SequentialModel{
     private:
         // Variables
+        int input_size;
         int layers_nbr;
-        std::vector<std::vector<double>> neural_matrix;
-        std::vector<std::vector<double>> synaptic_matrix;
+        std::vector<std::vector<std::vector<double>>> neural_matrix;
+        std::vector<std::vector<std::vector<double>>> synaptic_matrix;
         std::vector<double> bias;
         std::vector<std::string> activation_functions_matrix;
         std::string loss_function;
@@ -35,13 +36,26 @@ class SequentialModel{
         }
 
         // Methods
-        double MatrixMultiplication(std::vector<double> first_matrix, std::vector<double> second_matrix){
-            int matrix_size = first_matrix.size();
-            std::vector<double> new_matrix(second_matrix);
+        double MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix){
+            /*mn * nk*/
+            int first_matrix_dim_1_size = first_matrix.size();
+            int first_matrix_dim_2_size = first_matrix[0].size();
+            int second_matrix_dim_1_size = second_matrix.size();
+            int second_matrix_dim_2_size = second_matrix[0].size();
+            std::vector<std::vector<double>> new_matrix(second_matrix);
             double result = 0;
+            
+            for(int i = 0; i < first_matrix_dim_2_size; i++){
+                for(int j = 0; j < second_matrix_dim_1_size; j++){
+                    for(int k = 0; k < second_matrix_dim_2_size; k++){
+                        for(int l = 0; l < first_matrix_dim_1_size; l++){
+                            result = first_matrix[i][j] * second_matrix[k][l];
+                        }
+                    }
 
-            for(int i = 0; i < matrix_size; i++){
-                new_matrix.push_back(first_matrix[i] * second_matrix[i]);
+
+                    new_matrix.push_back(first_matrix[i] * second_matrix[i]);
+                }
             }
 
             for(int i = 0; i < new_matrix.size(); i++){
@@ -52,10 +66,9 @@ class SequentialModel{
         }
 
         void ForwardPropagation(double bias, int network_position){
-            /*Weights and inputs matrix must be the same size*/
             ActivationFunctions activation_function = ActivationFunctions();
-            std::vector<double> weights = synaptic_matrix[network_position];
-            std::vector<double> inputs = neural_matrix[network_position]; 
+            std::vector<std::vector<double>> weights = synaptic_matrix[network_position];
+            std::vector<std::vector<double>> inputs = neural_matrix[network_position];
             std::string choosen_function = activation_functions_matrix[network_position];
 
             std::vector<double> output = std::inner_product(weights.begin(), weights.end(), inputs.begin(), 0.0);
@@ -94,10 +107,7 @@ class SequentialModel{
                 if(this->activation_functions_matrix[i] == "Tanh")
                     // matrix product of ouput x synaptic weight * derivated function of the neurones values 
             }
-<<<<<<< HEAD
-=======
             neural_matrix[network_position] = output;
->>>>>>> b45f19d ([ADD] - adding the matrix multiplication method in the sequentialModel object)
         }
 
     public:
