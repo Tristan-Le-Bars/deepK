@@ -43,19 +43,29 @@ void ForwardPropagation(double bias, int network_position){
     std::vector<std::vector<double>> weights = synaptic_matrix[network_position];
     std::vector<std::vector<double>> inputs = neural_matrix[network_position];
     std::string choosen_function = activation_functions_matrix[network_position];
+    double sum = 0.0;
+    std::vector<double> sum_matrix;
 
-    std::vector<double> output = std::inner_product(weights.begin(), weights.end(), inputs.begin(), 0.0);
+    std::vector<std::vector<double>> output = MatrixMultiplication(inputs, wights);
 
-    for(int i; i < output.size(); i++){
-        output[i] += bias;
-        if(activation_function == "Logistic")
-            output[i] = function.Logistic(output[i]);
-        if(activation_function == "ReLU")
-            output[i] = function.ReLU(output[i]);
-        if(activation_function == "Tanh")
-            output[i] = function.Tanh(output[i]);
+    for(int i = 0; i < output[0].size; i++){
+        for(int j = 0; i < output.size; j++){
+            sum += output[i][j];
+        }
+            sum_matrix.push_back(sum);
+            sum = 0.0;
     }
-    neural_matrix[network_position] = output;
+
+    for(int i = 0; i < sum_matrix.size(); i++){
+        sum_matrix[i] += bias;
+        if(activation_function == "Logistic")
+            sum_matrix[i] = function.Logistic(sum_matrix[i]);
+        if(activation_function == "ReLU")
+            sum_matrix[i] = function.ReLU(sum_matrix[i]);
+        if(activation_function == "Tanh")
+            sum_matrix[i] = function.Tanh(sum_matrix[i]);
+    }
+    neural_matrix[network_position] = sum_matrix;
 }
 
 void BackwardPropagation(std::vector<double> labels){
