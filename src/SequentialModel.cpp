@@ -15,7 +15,7 @@ SequentialModel::SequentialModel(/* args */){}
 SequentialModel::~SequentialModel(){}
 
 // Methods
-std::vector<std::vector<double>> MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix){
+std::vector<std::vector<double>> SequentialModel::MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix){
     /*mn * nk*/
     int first_matrix_rows_num = first_matrix.size();
     int first_matrix_columns_num = first_matrix[0].size();
@@ -38,7 +38,7 @@ std::vector<std::vector<double>> MatrixMultiplication(std::vector<std::vector<do
     return result_matrix;
 }
 
-void ForwardPropagation(double bias, int network_position){
+void SequentialModel::ForwardPropagation(double bias, int network_position){
     ActivationFunctions activation_function = ActivationFunctions();
     std::vector<std::vector<double>> weights = synaptic_matrix[network_position];
     std::vector<std::vector<double>> inputs = neural_matrix[network_position];
@@ -46,7 +46,7 @@ void ForwardPropagation(double bias, int network_position){
     double sum = 0.0;
     std::vector<double> sum_matrix;
 
-    std::vector<std::vector<double>> output = MatrixMultiplication(inputs, wights);
+    std::vector<std::vector<double>> output = MatrixMultiplication(inputs, weights);
 
     for(int i = 0; i < output[0].size; i++){
         for(int j = 0; i < output.size; j++){
@@ -68,7 +68,7 @@ void ForwardPropagation(double bias, int network_position){
     neural_matrix[network_position] = sum_matrix;
 }
 
-void BackwardPropagation(std::vector<double> labels){
+void SequentialModel::BackwardPropagation(std::vector<double> labels){
     LossFunctions function = LossFunctions();
     std::vector<double> outputs = this->neural_matrix[neural_matrix>.size() - 1];
     std::vector<double> loss;
@@ -95,18 +95,18 @@ void BackwardPropagation(std::vector<double> labels){
 
 
 // Seters
-void SetLayersNbr(int l){layers_nbr = l;};
-void SetNeuralMatrix(std::vector<std::vector<double>> n){neural_matrix = n;};
-void SetActivationFuntionMatrix(std::vector<std::string> a){activation_functions_matrix = a;};
-void SetLossFunction(std::string l){loss_function = l;}
+void SequentialModel::SetLayersNbr(int l){layers_nbr = l;};
+void SequentialModel::SetNeuralMatrix(std::vector<std::vector<std::vector<double>>> n){neural_matrix = n;};
+void SequentialModel::SetActivationFuntionMatrix(std::vector<std::string> a){activation_functions_matrix = a;};
+void SequentialModel::SetLossFunction(std::string l){loss_function = l;}
 
 // Geters
-int GetLayerNbr(){return layers_nbr;}
-std::vector<std::vector<double>> GetNeuralMatrix(){return neural_matrix;}
-std::vector<std::string> GetActivationFunctionMatrix(){return activation_functions_matrix;}
+int SequentialModel::GetLayerNbr(){return layers_nbr;}
+std::vector<std::vector<std::vector<double>>> SequentialModel::GetNeuralMatrix(){return neural_matrix;}
+std::vector<std::string> SequentialModel::GetActivationFunctionMatrix(){return activation_functions_matrix;}
 
 // Methodes
-void AddLayer(int neurons_nbr, std::string activation_function) {
+void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function) {
     std::vector<double> neurons(neurons_nbr, 0);
     std::vector<double> synapses;
 
