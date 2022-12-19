@@ -64,7 +64,8 @@ std::vector<std::vector<double>> SequentialModel::MatrixTransposition(std::vecto
     }
 }
 
-void SequentialModel::ForwardPropagation(double bias, int network_position){
+// AJOUTER LA GESTION DES NEURONES DE BIAIS
+void SequentialModel::ForwardPropagation(int network_position){
     ActivationFunctions function; 
     std::string activation_function = activation_functions_matrix[network_position];
     double sum = 0.0;
@@ -103,7 +104,7 @@ void SequentialModel::ForwardPropagation(double bias, int network_position){
     neural_matrix[network_position + 1] = sum_matrix;
 }
 
-// TROUVER COMMENT FAIRE TOUT LE RÉSEAU
+// AJOUTER LA GESTION DES NEURONES DE BIAIS
 void SequentialModel::BackwardPropagation(std::vector<double> labels){
     LossFunctions function;
     ActivationFunctions ActivationFunctions;
@@ -179,11 +180,11 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
             synaptic_matrix[i][j] = synaptic_matrix[i][j] - impact_rate[j];
         }
     }
-    neural_matrix[network_position] = output;
+    // neural_matrix[network_position] = output;
 }
 
 
-void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function) {
+void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function){
     std::vector<double> neurons(neurons_nbr, 0);
     std::vector<double> synapses;
 
@@ -197,4 +198,15 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
     neural_matrix.push_back(neurons);
     
     activation_functions_matrix.push_back(activation_function);
+}
+
+void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs){
+    // INITIALIZE WEIGHTS WITH RANDOM VALUES
+
+    for(int i = 0; i < epochs; i++){
+        for(int j = 0; j < neural_matrix.size(); j++){
+            ForwardPropagation(j);
+        }
+        BackwardPropagation(labels_set);
+    }
 }

@@ -17,7 +17,7 @@ class SequentialModel{
 
         std::vector<std::vector<double>> MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix);
         std::vector<std::vector<double>> MatrixTransposition(std::vector<std::vector<double>> matrix);
-        void ForwardPropagation(double bias, int network_position);
+        void ForwardPropagation(int network_position);
         void BackwardPropagation(std::vector<double> labels);
 
     public:
@@ -38,6 +38,7 @@ class SequentialModel{
         std::vector<std::vector<double>> GetNeuralMatrix();
         std::vector<std::string> GetActivationFunctionMatrix();
         void AddLayer(int neurons_nbr, std::string activation_function);
+        void Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs);
 
 };
 
