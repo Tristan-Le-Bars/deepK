@@ -22,7 +22,7 @@ class SequentialModel{
 
     public:
         // Constructor
-        SequentialModel(/* args */);
+        SequentialModel(int input_size);
 
         // Destructor
         ~SequentialModel();

@@ -10,7 +10,10 @@
 #include "../headers/SequentialModel.hpp"
 
 // Constructor
-SequentialModel::SequentialModel(/* args */){}
+SequentialModel::SequentialModel(int input_size){
+    std::vector<double> input_layer(input_size, 0);
+    neural_matrix.push_back(input_layer);
+}
 
 // Destructor
 SequentialModel::~SequentialModel(){}
@@ -205,9 +208,7 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
 }
 
 void SequentialModel::Compile(){
-    // CREATE AND FILL THE NEURAL AND SYNAPTIC MATRIX
-
-    // INITIALIZE WEIGHTS WITH RANDOM VALUES
+    // FILL THE SYNAPTIC MATRIX WITH RANDOM VALUES AND THE NEURAL MATRIX WITH 0
 }
 
 void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs){
