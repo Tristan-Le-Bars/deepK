@@ -93,7 +93,7 @@ void SequentialModel::ForwardPropagation(int network_position){
 
     /* Apply the activation function*/
     for(int i = 0; i < sum_matrix.size(); i++){
-        sum_matrix[i] += bias;
+        sum_matrix[i] += bias[network_position];
         if(activation_function == "Logistic")
             sum_matrix[i] = function.Logistic(sum_matrix[i]);
         if(activation_function == "ReLU")
