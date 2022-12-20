@@ -67,8 +67,11 @@ std::vector<std::vector<double>> SequentialModel::MatrixTransposition(std::vecto
     }
 }
 
-std::vector<double> GaussianRand(){
+double SequentialModel::GaussianRand(){
+    std::default_random_engine generator(time(0));
+    std::normal_distribution<double> distribution(0.0,1.0);
 
+    return distribution(generator);
 }
 
 void SequentialModel::ForwardPropagation(int network_position){

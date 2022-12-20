@@ -17,6 +17,7 @@ class SequentialModel{
 
         std::vector<std::vector<double>> MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix);
         std::vector<std::vector<double>> MatrixTransposition(std::vector<std::vector<double>> matrix);
+        double SequentialModel::GaussianRand();
         void ForwardPropagation(int network_position);
         void BackwardPropagation(std::vector<double> labels);
 
