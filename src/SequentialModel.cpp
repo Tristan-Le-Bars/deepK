@@ -126,7 +126,7 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
     std::vector<std::vector<double>> impact;
     std::vector<std::vector<double>> bias_modif;
     std::vector<std::vector<double>> difference_buffer;
-    std::vector<std::vector<double>> synaptic_matrix_buffer;
+    // std::vector<std::vector<double>> synaptic_matrix_buffer;
     std::vector<std::vector<double>> neural_matrix_buffer;
     std::vector<std::vector<double>> labels_range;
     double total_error;
@@ -159,7 +159,7 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
 
     // Using buffer to give the appropriate number of dimensions to the difference and neural matrix vectors 
     difference_buffer.push_back(difference);
-    neural_matrix_buffer.push_back(neural_matrix[neural_matrix.size() - 2]);
+    neural_matrix_buffer.push_back(neural_matrix[neural_matrix.size() - 2]); // POURQUOI -2 ?
     impact = MatrixMultiplication(labels_range, MatrixMultiplication(difference_buffer, MatrixTransposition(neural_matrix_buffer)));
     bias_modif = MatrixMultiplication(labels_range, difference_buffer);
 
@@ -167,8 +167,8 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
 
     for(int i = neural_matrix.size(); i > 0; i--){
         if(activation_functions_matrix[i] == "Logistic")
-            synaptic_matrix_buffer.push_back(synaptic_matrix[i]);
-            der_prev_input = MatrixMultiplication(synaptic_matrix_buffer, difference_buffer);
+            // synaptic_matrix_buffer.push_back(synaptic_matrix[i]);
+            der_prev_input = MatrixMultiplication(synaptic_matrix[i], difference_buffer);
             for(int j = 0; j < der_prev_input[0].size(); j++){
                 der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedLogistic(neural_matrix[i][j]);
             }
