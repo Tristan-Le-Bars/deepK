@@ -9,7 +9,7 @@ class SequentialModel{
         int input_size;
         int layers_nbr;
         std::vector<std::vector<double>> neural_matrix;
-        std::vector<std::vector<double>> synaptic_matrix;
+        std::vector<std::vector<std::vector<double>>> synaptic_matrix;
         std::vector<double> bias;
         std::vector<std::string> activation_functions_matrix;
         std::string loss_function;

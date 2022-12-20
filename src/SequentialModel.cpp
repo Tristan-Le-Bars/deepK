@@ -64,6 +64,10 @@ std::vector<std::vector<double>> SequentialModel::MatrixTransposition(std::vecto
     }
 }
 
+std::vector<double> GaussianRand(){
+
+}
+
 // AJOUTER LA GESTION DES NEURONES DE BIAIS
 void SequentialModel::ForwardPropagation(int network_position){
     ActivationFunctions function; 
@@ -72,13 +76,13 @@ void SequentialModel::ForwardPropagation(int network_position){
     std::vector<double> sum_matrix;
     // create buffer variables to set input and weights to the good number of dimensions to use*
     // the matrix multiplication methodes
-    std::vector<std::vector<double>> weights;
+    std::vector<std::vector<double>> weights = synaptic_matrix[network_position]; // Shape = number of neurones * number of connection per neuron
     std::vector<std::vector<double>> inputs;
-    weights.push_back(synaptic_matrix[network_position]);
+    // weights.push_back(synaptic_matrix[network_position]);
     inputs.push_back(neural_matrix[network_position]);
     
 
-    std::vector<std::vector<double>> output = MatrixMultiplication(inputs, weights);
+    std::vector<std::vector<double>> output = MatrixMultiplication(MatrixTransposition(weights), inputs);
 
     /* Use only if the ouput matrix have a dim1 size above 1*/
     // for(int i = 0; i < output[0].size; i++){
