@@ -210,9 +210,9 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
     activation_functions_matrix.push_back(activation_function);
 }
 
-void SequentialModel::Compile(){
-    // FILL THE SYNAPTIC MATRIX WITH RANDOM VALUES AND THE NEURAL MATRIX WITH 0
-}
+// void SequentialModel::Compile(){
+//     // FILL THE SYNAPTIC MATRIX WITH RANDOM VALUES AND THE NEURAL MATRIX WITH 0
+// }
 
 void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs){
 

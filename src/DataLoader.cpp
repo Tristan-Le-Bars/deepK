@@ -36,3 +36,22 @@ std::vector<std::vector<std::string>> DataLoader::LoadCSV(std::filesystem::path 
     return data_matrix;
 }
 
+void DataLoader::SplitDataset(std::vector<std::vector<std::string>> dataset, double percentage,
+                              std::vector<std::vector<std::string>> *set_one,
+                              std::vector<std::vector<std::string>> *set_two){
+                                
+    std::vector<std::vector<std::string>> set_one_buffer;
+    std::vector<std::vector<std::string>> set_two_buffer;
+
+    int split_point = (int) dataset.size() * percentage;
+
+    for(int i = 0; i < dataset.size(); i++){
+        if(i < split_point)
+            set_one_buffer.push_back(dataset[i]);
+        else
+            set_two_buffer.push_back(dataset[i]);
+    }
+    *set_one = set_one_buffer;
+    *set_two = set_two_buffer;
+}
+
