@@ -30,7 +30,7 @@ class SequentialModel{
 
         // Methods
         void SetLayersNbr(int l);
-        void SetNeuralMatrix(std::vector<std::vector<std::vector<double>>> n);
+        void SetNeuralMatrix(std::vector<std::vector<double>> n);
         void SetActivationFuntionMatrix(std::vector<std::string> a);
         void SetLossFunction(std::string l);
         void SetLearningRate(double lr);

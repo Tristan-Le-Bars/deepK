@@ -20,7 +20,7 @@ SequentialModel::~SequentialModel(){}
 
 // Seters
 void SequentialModel::SetLayersNbr(int l){layers_nbr = l;};
-void SequentialModel::SetNeuralMatrix(std::vector<std::vector<std::vector<double>>> n){neural_matrix = n;};
+void SequentialModel::SetNeuralMatrix(std::vector<std::vector<double>> n){neural_matrix = n;};
 void SequentialModel::SetActivationFuntionMatrix(std::vector<std::string> a){activation_functions_matrix = a;};
 void SequentialModel::SetLossFunction(std::string l){loss_function = l;}
 void SequentialModel::SetLearningRate(double lr){learning_rate = lr;}
@@ -186,7 +186,8 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
         }
 
         for(int j = 0; j < synaptic_matrix[i].size(); j++){
-            synaptic_matrix[i][j] = synaptic_matrix[i][j] - impact_rate[j];
+            for(int k = 0; k < synaptic_matrix[i][j].size(); k++)
+            synaptic_matrix[i][j][k] = synaptic_matrix[i][j][k] - impact_rate[j];
         }
     }
     // neural_matrix[network_position] = output;
@@ -206,6 +207,7 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
     }
     neural_matrix.push_back(neurons);
     synaptic_matrix.push_back(synapses);
+    bias.push_back(0.0);
     
     activation_functions_matrix.push_back(activation_function);
 }
