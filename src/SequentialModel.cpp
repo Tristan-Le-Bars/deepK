@@ -102,7 +102,7 @@ void SequentialModel::ForwardPropagation(int network_position){
 
     /* Apply the activation function*/
     for(int i = 0; i < sum_matrix.size(); i++){
-        sum_matrix[i] += bias[network_position];
+        // sum_matrix[i] += bias[network_position]; // ICI AJOUTER LA GESTION DES BIAIS
         if(activation_function == "Logistic")
             sum_matrix[i] = function.Logistic(sum_matrix[i]);
         if(activation_function == "ReLU")
@@ -161,7 +161,6 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
     difference_buffer.push_back(difference);
     neural_matrix_buffer.push_back(neural_matrix[neural_matrix.size() - 2]); // POURQUOI -2 ?
     impact = MatrixMultiplication(labels_range, MatrixMultiplication(difference_buffer, MatrixTransposition(neural_matrix_buffer)));
-    bias_modif = MatrixMultiplication(labels_range, difference_buffer);
 
 
 
@@ -189,6 +188,10 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
             for(int k = 0; k < synaptic_matrix[i][j].size(); k++)
             synaptic_matrix[i][j][k] = synaptic_matrix[i][j][k] - impact_rate[j];
         }
+
+        /*GESTION DES BIAS À FAIRE PLUS TARD*/
+        // bias_modif = MatrixMultiplication(MatrixMultiplication(labels_range, difference_buffer), der_prev_input);
+        // bias[i] = bias[i] - (learning_rate * bias_modif);
     }
     // neural_matrix[network_position] = output;
 }
@@ -198,13 +201,16 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
     std::vector<double> neurons(neurons_nbr, 0);
     std::vector<std::vector<double>> synapses; // Shape = (neurons_nbr, neurons_nbr)
 
-    if(neural_matrix.size() >= 1){
+    if(neural_matrix.size() > 1){
         for(int i = 0; i < neural_matrix.back().size(); i++){
+            synapses.push_back(std::vector<double>());
             for(int j = 0; j < neurons_nbr; j++){
+                std::cout << "synapse size = " << synapses.size() << std::endl;
                 synapses[i].push_back(0.0);
             }
         }
     }
+    
     neural_matrix.push_back(neurons);
     synaptic_matrix.push_back(synapses);
     bias.push_back(0.0);

@@ -3,6 +3,13 @@
 
 class ActivationFunctions {
     public:
+        // Constructor
+        ActivationFunctions();
+
+        // Destructor
+        ~ActivationFunctions();
+
+        // Methods
         double Logistic(double x);
         double ReLU(double x);
         double Tanh(double x);
