@@ -38,6 +38,8 @@ class SequentialModel{
         int GetLayerNbr();
         std::vector<std::vector<double>> GetNeuralMatrix();
         std::vector<std::string> GetActivationFunctionMatrix();
+        int GetInputSize();
+
         void AddLayer(int neurons_nbr, std::string activation_function);
         void Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs);
 

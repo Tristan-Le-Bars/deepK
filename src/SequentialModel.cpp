@@ -10,9 +10,18 @@
 #include "../headers/SequentialModel.hpp"
 
 // Constructor
-SequentialModel::SequentialModel(int input_size){
+SequentialModel::SequentialModel(int input_s){
     std::vector<double> input_layer(input_size, 0);
+    for(int i = 0; i < input_s; i++){
+        input_layer.push_back(0.0);
+    }
     neural_matrix.push_back(input_layer);
+
+    // for(int i = 0; i < neural_matrix[0].size(); i++){
+    //     neural_matrix[0].push_back(0.0);
+    //     std::cout << "test";
+    // }
+    input_size = input_s;
 }
 
 // Destructor
@@ -29,7 +38,7 @@ void SequentialModel::SetLearningRate(double lr){learning_rate = lr;}
 int SequentialModel::GetLayerNbr(){return layers_nbr;}
 std::vector<std::vector<double>> SequentialModel::GetNeuralMatrix(){return neural_matrix;}
 std::vector<std::string> SequentialModel::GetActivationFunctionMatrix(){return activation_functions_matrix;}
-
+int SequentialModel::GetInputSize(){return input_size;}
 // Methods
 std::vector<std::vector<double>> SequentialModel::MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix){
     /*mn * nk = mk*/
@@ -86,6 +95,15 @@ void SequentialModel::ForwardPropagation(int network_position){
     // weights.push_back(synaptic_matrix[network_position]);
     inputs.push_back(neural_matrix[network_position]);
     
+    for(int i = 0;i<synaptic_matrix.size(); i++){
+        for(int j = 0;j<synaptic_matrix[i].size(); j++){
+            for(int k = 0;k<synaptic_matrix[i][j].size();k++){
+                // std::cout << synaptic_matrix[i][j][k];
+            }
+            // std::cout << std::endl;
+        }
+        // std::cout << std::endl;
+    }
 
     std::vector<std::vector<double>> output = MatrixMultiplication(MatrixTransposition(weights), inputs);
 
@@ -97,9 +115,9 @@ void SequentialModel::ForwardPropagation(int network_position){
     //         sum_matrix.push_back(sum);
     //         sum = 0.0;
     // }
-
+    std::cout << "test2" << std::endl;
     sum_matrix = output[0];
-
+    std::cout << "test3" << std::endl;
     /* Apply the activation function*/
     for(int i = 0; i < sum_matrix.size(); i++){
         // sum_matrix[i] += bias[network_position]; // ICI AJOUTER LA GESTION DES BIAIS
@@ -110,6 +128,7 @@ void SequentialModel::ForwardPropagation(int network_position){
         if(activation_function == "Tanh")
             sum_matrix[i] = function.Tanh(sum_matrix[i]);
     }
+    std::cout << "test4" << std::endl;
     neural_matrix[network_position + 1] = sum_matrix;
 }
 
@@ -205,7 +224,14 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
         for(int i = 0; i < neural_matrix.back().size(); i++){
             synapses.push_back(std::vector<double>());
             for(int j = 0; j < neurons_nbr; j++){
-                std::cout << "synapse size = " << synapses.size() << std::endl;
+                synapses[i].push_back(0.0);
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < input_size; i++){
+            synapses.push_back(std::vector<double>());
+            for(int j = 0; j < neurons_nbr; j++){
                 synapses[i].push_back(0.0);
             }
         }
@@ -223,9 +249,30 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
 // }
 
 void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs){
+    std::cout << "neural map:" << std::endl;
+    
+    for(int i = 0;i<neural_matrix.size(); i++){
+        for(int j = 0;j<neural_matrix[i].size(); j++){
+            std::cout << neural_matrix[i][j];
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "synaptic map:" << std::endl;
+    for(int i = 0;i<synaptic_matrix.size(); i++){
+        for(int j = 0;j<synaptic_matrix[i].size(); j++){
+            for(int k = 0;k<synaptic_matrix[i][j].size();k++){
+                std::cout << synaptic_matrix[i][j][k];
+            }
+            std::cout << " ";
+        }
+        std::cout << std::endl;
+    }
 
     for(int i = 0; i < epochs; i++){
+        std::cout << "Epoch: " << i << std::endl;
         for(int j = 0; j < neural_matrix.size(); j++){
+            std::cout << "Layer: " << j << std::endl;
             ForwardPropagation(j);
         }
         BackwardPropagation(labels_set);
