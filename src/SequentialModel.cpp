@@ -13,18 +13,7 @@
 SequentialModel::SequentialModel(int input_s){
     std::vector<double> input_layer(input_s, 0.0);
 
-        // for(int i = 0; i < input_s; i++){
-        //     input_layer.push_back(0.0);
-        // }
-
     neural_matrix.push_back(input_layer);
-    
-    for (int i = 0; i < neural_matrix.size(); i++) {
-        for (int j = 0; j < neural_matrix[0].size(); j++) {
-            std::cout << neural_matrix[i][j] << " ";
-    }
-    std::cout << std::endl;
-    }
 
     input_size = input_s;
 }
@@ -55,23 +44,34 @@ std::vector<std::vector<double>> SequentialModel::MatrixMultiplication(std::vect
 
     std::vector<std::vector<double>> result_matrix(first_matrix_rows_num, std::vector<double>(second_matrix_columns_num, 0.0));
 
-    std::cout << "firs_matrix_rows_num = " << first_matrix_rows_num << std::endl;
-    std::cout << "first_matrix_columns_num = " << first_matrix_columns_num << std::endl;
-    std::cout << "second_matrix_rows_num = " << second_matrix_rows_num << std::endl;
-    std::cout << "second_matrix_columns_num = " << second_matrix_columns_num << std::endl;
+    std::cout << "inputs_matrix =" << std::endl; 
+    for (int i = 0; i < first_matrix_rows_num; i++) {
+        for (int j = 0; j < first_matrix_columns_num; j++) {
+            std::cout << first_matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
+    std::cout << "weights_matrix =" << std::endl; 
+    for (int i = 0; i < second_matrix_rows_num; i++) {
+        for (int j = 0; j < second_matrix_columns_num; j++) {
+            std::cout << second_matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
+
 
     for(int i = 0; i < first_matrix_rows_num; i++){
-        std::cout << "i = " << i << std::endl;
         for(int j = 0; j < second_matrix_columns_num; j++){
-            std::cout << "j = " << j << std::endl;
             for(int k = 0; k < first_matrix_columns_num; k++){
-                std::cout << "k = " << k << std::endl;
                 result_matrix[i][j] += first_matrix[i][k] * second_matrix[k][j];
             }
         }
     }
 
-    std::cout << "test" << std::endl;
     return result_matrix;
 }
 
@@ -120,38 +120,28 @@ void SequentialModel::ForwardPropagation(int network_position){
     for(int i = 0;i<synaptic_matrix.size(); i++){
         for(int j = 0;j<synaptic_matrix[i].size(); j++){
             for(int k = 0;k<synaptic_matrix[i][j].size();k++){
-                // std::cout << synaptic_matrix[i][j][k];
             }
-            // std::cout << std::endl;
         }
-        // std::cout << std::endl;
     }
 
-    // for(int i = 0;i < weights.size();i++){
-    //     for(int j = 0; j < weights[i].size(); j++){
-    //         std::cout << weights[i][j];
-    //     }
-    //     std::cout << std::endl;
-    // }
 
-    // for(int i = 0;i < inputs.size();i++){
-    //     for(int j = 0; j < inputs[i].size(); j++){
-    //         std::cout << inputs[i][j];
-    //     }
-    //     std::cout << std::endl;
-    // }
+    std::vector<std::vector<double>> output = MatrixMultiplication(inputs, weights);
 
-    for (int i = 0; i < weights.size(); i++) {
-        for (int j = 0; j < weights[0].size(); j++) {
-            std::cout << weights[i][j] << " ";
-    }
-    std::cout << std::endl;
-    }
-
-    std::vector<std::vector<double>> output = MatrixMultiplication(MatrixTransposition(weights), inputs);
-
- 
     sum_matrix = output[0];
+
+    std::cout << "sum_matrix =" << std::endl;
+    for (int i = 0; i < sum_matrix.size(); i++) {
+        std::cout << sum_matrix[i];
+    }
+
+    std::cout << std::endl;
+
+    // for (int i = 0; i < sum_matrix.size(); i++) {
+    //     for (int j = 0; j < sum_matrix[0].size(); j++) {
+    //         std::cout << sum_matrix[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 
     /* Apply the activation function*/
     for(int i = 0; i < sum_matrix.size(); i++){
