@@ -11,16 +11,21 @@
 
 // Constructor
 SequentialModel::SequentialModel(int input_s){
-    std::vector<double> input_layer(input_size, 0);
-    for(int i = 0; i < input_s; i++){
-        input_layer.push_back(0.0);
-    }
-    neural_matrix.push_back(input_layer);
+    std::vector<double> input_layer(input_s, 0.0);
 
-    // for(int i = 0; i < neural_matrix[0].size(); i++){
-    //     neural_matrix[0].push_back(0.0);
-    //     std::cout << "test";
-    // }
+        // for(int i = 0; i < input_s; i++){
+        //     input_layer.push_back(0.0);
+        // }
+
+    neural_matrix.push_back(input_layer);
+    
+    for (int i = 0; i < neural_matrix.size(); i++) {
+        for (int j = 0; j < neural_matrix[0].size(); j++) {
+            std::cout << neural_matrix[i][j] << " ";
+    }
+    std::cout << std::endl;
+    }
+
     input_size = input_s;
 }
 
@@ -39,6 +44,7 @@ int SequentialModel::GetLayerNbr(){return layers_nbr;}
 std::vector<std::vector<double>> SequentialModel::GetNeuralMatrix(){return neural_matrix;}
 std::vector<std::string> SequentialModel::GetActivationFunctionMatrix(){return activation_functions_matrix;}
 int SequentialModel::GetInputSize(){return input_size;}
+
 // Methods
 std::vector<std::vector<double>> SequentialModel::MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix){
     /*mn * nk = mk*/
@@ -46,34 +52,50 @@ std::vector<std::vector<double>> SequentialModel::MatrixMultiplication(std::vect
     int first_matrix_columns_num = first_matrix[0].size();
     int second_matrix_rows_num = second_matrix.size();
     int second_matrix_columns_num = second_matrix[0].size();
-    std::vector<std::vector<double>> result_matrix(first_matrix_rows_num);
 
+    std::vector<std::vector<double>> result_matrix(first_matrix_rows_num, std::vector<double>(second_matrix_columns_num, 0.0));
 
-    for(int i = 0; i < first_matrix_rows_num; ++i)
-        for(int j = 0; j < second_matrix_columns_num; ++j){
-            result_matrix[i].push_back(0.00);
-        }
-    
-    for(int i = 0; i < first_matrix_rows_num; i++)
-        for(int j = 0; j < second_matrix_columns_num; j++)
+    std::cout << "firs_matrix_rows_num = " << first_matrix_rows_num << std::endl;
+    std::cout << "first_matrix_columns_num = " << first_matrix_columns_num << std::endl;
+    std::cout << "second_matrix_rows_num = " << second_matrix_rows_num << std::endl;
+    std::cout << "second_matrix_columns_num = " << second_matrix_columns_num << std::endl;
+
+    for(int i = 0; i < first_matrix_rows_num; i++){
+        std::cout << "i = " << i << std::endl;
+        for(int j = 0; j < second_matrix_columns_num; j++){
+            std::cout << "j = " << j << std::endl;
             for(int k = 0; k < first_matrix_columns_num; k++){
+                std::cout << "k = " << k << std::endl;
                 result_matrix[i][j] += first_matrix[i][k] * second_matrix[k][j];
             }
+        }
+    }
 
+    std::cout << "test" << std::endl;
     return result_matrix;
 }
 
 std::vector<std::vector<double>> SequentialModel::MatrixTransposition(std::vector<std::vector<double>> matrix){
     int row_size = matrix.size();
     int col_size = matrix[0].size();
-    std::vector<std::vector<double>> transposed;
+    std::vector<std::vector<double>> transposed(col_size, std::vector<double>(row_size));
 
-    for(int i = 0; i < row_size; ++i){
-        for(int j = 0; j < col_size; ++j)
+    // for(int i = 0; i < col_size; ++i){
+    //     transposed.push_back(std::vector<double>());
+    //     for(int j = 0; j < row_size; ++j)
+    //     {
+    //         transposed[i].push_back(0.0);
+    //     }
+    // }
+
+
+    for(int i = 0; i < row_size; i++){
+        for(int j = 0; j < col_size; j++)
         {
             transposed[j][i] = matrix[i][j];
         }
     }
+    return transposed;
 }
 
 double SequentialModel::GaussianRand(){
@@ -105,19 +127,32 @@ void SequentialModel::ForwardPropagation(int network_position){
         // std::cout << std::endl;
     }
 
+    // for(int i = 0;i < weights.size();i++){
+    //     for(int j = 0; j < weights[i].size(); j++){
+    //         std::cout << weights[i][j];
+    //     }
+    //     std::cout << std::endl;
+    // }
+
+    // for(int i = 0;i < inputs.size();i++){
+    //     for(int j = 0; j < inputs[i].size(); j++){
+    //         std::cout << inputs[i][j];
+    //     }
+    //     std::cout << std::endl;
+    // }
+
+    for (int i = 0; i < weights.size(); i++) {
+        for (int j = 0; j < weights[0].size(); j++) {
+            std::cout << weights[i][j] << " ";
+    }
+    std::cout << std::endl;
+    }
+
     std::vector<std::vector<double>> output = MatrixMultiplication(MatrixTransposition(weights), inputs);
 
-    /* Use only if the ouput matrix have a dim1 size above 1*/
-    // for(int i = 0; i < output[0].size; i++){
-    //     for(int j = 0; i < output.size; j++){
-    //         sum += output[i][j];
-    //     }
-    //         sum_matrix.push_back(sum);
-    //         sum = 0.0;
-    // }
-    std::cout << "test2" << std::endl;
+ 
     sum_matrix = output[0];
-    std::cout << "test3" << std::endl;
+
     /* Apply the activation function*/
     for(int i = 0; i < sum_matrix.size(); i++){
         // sum_matrix[i] += bias[network_position]; // ICI AJOUTER LA GESTION DES BIAIS
@@ -128,7 +163,6 @@ void SequentialModel::ForwardPropagation(int network_position){
         if(activation_function == "Tanh")
             sum_matrix[i] = function.Tanh(sum_matrix[i]);
     }
-    std::cout << "test4" << std::endl;
     neural_matrix[network_position + 1] = sum_matrix;
 }
 
@@ -178,7 +212,7 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
 
     // Using buffer to give the appropriate number of dimensions to the difference and neural matrix vectors 
     difference_buffer.push_back(difference);
-    neural_matrix_buffer.push_back(neural_matrix[neural_matrix.size() - 2]); // POURQUOI -2 ?
+    neural_matrix_buffer.push_back(neural_matrix[neural_matrix.size()]);
     impact = MatrixMultiplication(labels_range, MatrixMultiplication(difference_buffer, MatrixTransposition(neural_matrix_buffer)));
 
 
