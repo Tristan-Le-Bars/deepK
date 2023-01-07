@@ -107,25 +107,11 @@ void SequentialModel::ForwardPropagation(int network_position){
     std::vector<std::vector<double>> inputs;
     // weights.push_back(synaptic_matrix[network_position]);
     inputs.push_back(neural_matrix[network_position]);
-    
-    for(int i = 0;i<synaptic_matrix.size(); i++){
-        for(int j = 0;j<synaptic_matrix[i].size(); j++){
-            for(int k = 0;k<synaptic_matrix[i][j].size();k++){
-            }
-        }
-    }
 
 
     std::vector<std::vector<double>> output = MatrixMultiplication(inputs, weights);
 
     sum_matrix = output[0];
-
-    // std::cout << "sum_matrix =" << std::endl;
-    // for (int i = 0; i < sum_matrix.size(); i++) {
-    //     std::cout << sum_matrix[i];
-    // }
-
-    // std::cout << std::endl;
 
     /* Apply the activation function*/
     for(int i = 0; i < sum_matrix.size(); i++){
@@ -147,33 +133,42 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
     std::vector<double> outputs = neural_matrix[neural_matrix.size() - 1];
     std::vector<double> loss;
     std::vector<double> labels_buffer = labels;
-    // std::string loss_function = loss_function;
     std::vector<double> output_layer_errors;
     std::vector<double> difference;
     std::vector<std::vector<double>> impact;
     std::vector<std::vector<double>> bias_modif;
     std::vector<std::vector<double>> difference_buffer;
-    // std::vector<std::vector<double>> synaptic_matrix_buffer;
     std::vector<std::vector<double>> neural_matrix_buffer;
     std::vector<std::vector<double>> labels_range;
     double total_error;
     std::vector<std::vector<double>> der_prev_input;
     std::vector<double> impact_rate;
+    int correct = 0;
     
     labels_range.push_back(std::vector<double>());
     labels_range[0].push_back(1.0 / labels.size());
     if(loss_function == "mean_squared")
-        loss = function.MeanSquaredError(labels, outputs);
-    if(loss_function == "binary_cross_entropy")
-        loss = function.BinaryCrossEntropy(labels, outputs);
-    if(loss_function == "hinge"){
-        for(int i = 0; i < labels_buffer.size(); i++){
-            if(!labels_buffer[i] == 0.0)
-                labels_buffer[i] = -1;
-        }
-        loss = function.Hinge(labels_buffer, outputs);
-    }
+        function.MeanSquaredError(labels, outputs, &loss);
 
+    /*AJOUTER LES AUTRES FONCTION DE LOSS*/
+    // if(loss_function == "binary_cross_entropy")
+    //     loss = function.BinaryCrossEntropy(labels, outputs);
+    // if(loss_function == "hinge"){
+    //     for(int i = 0; i < labels_buffer.size(); i++){
+    //         if(!labels_buffer[i] == 0.0)
+    //             labels_buffer[i] = -1;
+    //     }
+    //     loss = function.Hinge(labels_buffer, outputs);
+    // }
+    
+    // std::cout << "loss_size = " << loss.size() <<std::endl;
+
+    /*FAIRE DES PREDICTION SUR LE SET DE TEST POUR AVOIR L'ACCURACY*/
+
+    // std::cout << "correct = " << correct << std::endl;
+
+    accurarcies_history.push_back(100.0 * correct / (double)loss.size());
+    std::cout << "accuracy = " << accurarcies_history.back() << std::endl;
     
     /* Update weights at the output */
     /* get the error of each ouput neuron */
@@ -267,7 +262,6 @@ void SequentialModel::Compile(){
 
 void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs){
     std::cout << "neural map:" << std::endl;
-    
     for(int i = 0;i<neural_matrix.size(); i++){
         for(int j = 0;j<neural_matrix[i].size(); j++){
             std::cout << neural_matrix[i][j];
@@ -289,6 +283,7 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
     std::cout << std::endl << "neural_matrix size = " << neural_matrix.size() << std::endl;
 
     for(int i = 0; i < epochs; i++){
+        neural_matrix[0] = training_set[i];
         std::cout << "Epoch: " << i << std::endl;
         for(int j = 0; j < neural_matrix.size() - 1; j++){
             ForwardPropagation(j);

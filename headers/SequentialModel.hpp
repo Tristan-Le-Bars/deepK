@@ -14,6 +14,7 @@ class SequentialModel{
         std::vector<std::string> activation_functions_matrix;
         std::string loss_function;
         double learning_rate;
+        std::vector<double> accurarcies_history;
 
         std::vector<std::vector<double>> MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix);
         std::vector<std::vector<double>> MatrixTransposition(std::vector<std::vector<double>> matrix);
