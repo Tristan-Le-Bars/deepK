@@ -251,9 +251,19 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
     activation_functions_matrix.push_back(activation_function);
 }
 
-// void SequentialModel::Compile(){
-//     // FILL THE SYNAPTIC MATRIX WITH RANDOM VALUES AND THE NEURAL MATRIX WITH 0
-// }
+void SequentialModel::Compile(){
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_real_distribution<double> distribution(-1.0, 1.0);
+
+    for(int i = 0; i < synaptic_matrix.size(); i++){
+        for(int j = 0; j < synaptic_matrix[i].size(); j++){
+            for(int k = 0; k < synaptic_matrix[i][j].size(); k++){
+                synaptic_matrix[i][j][k] = distribution(generator);
+            }
+        }
+    }
+}
 
 void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs){
     std::cout << "neural map:" << std::endl;
