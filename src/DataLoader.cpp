@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <random>
+#include <algorithm>
 
 #include "../headers/DataLoader.hpp"
 
@@ -14,7 +16,7 @@ DataLoader::DataLoader(/* args */){}
 DataLoader::~DataLoader(){}
 
 // Methods
-std::vector<std::vector<std::string>> DataLoader::LoadCSV(std::filesystem::path path){
+std::vector<std::vector<std::string>> DataLoader::LoadCSV(std::filesystem::path path, bool shuffle){
     std::vector<std::vector<std::string>> data_matrix;
     std::fstream fin;
 
@@ -33,6 +35,10 @@ std::vector<std::vector<std::string>> DataLoader::LoadCSV(std::filesystem::path 
         
         data_matrix.push_back(row);
     }
+
+    if(shuffle == true)
+        std::random_shuffle(data_matrix.begin() + 1, data_matrix.end());
+
     return data_matrix;
 }
 

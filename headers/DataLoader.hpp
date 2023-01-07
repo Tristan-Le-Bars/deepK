@@ -14,7 +14,7 @@ class DataLoader{
         ~DataLoader();
 
         // Methods
-        std::vector<std::vector<std::string>> LoadCSV(std::filesystem::path path);
+        std::vector<std::vector<std::string>> LoadCSV(std::filesystem::path path, bool shuffle = true);
         void SplitDataset(std::vector<std::vector<std::string>> dataset, double percentage,
                           std::vector<std::vector<std::string>> *set_one,
                           std::vector<std::vector<std::string>> *set_two);
