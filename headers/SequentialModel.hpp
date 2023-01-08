@@ -21,6 +21,7 @@ class SequentialModel{
         double GaussianRand();
         void ForwardPropagation(int network_position);
         void BackwardPropagation(std::vector<double> labels);
+        double TestAccuracy(std::vector<double> test_set; std::vector<double> test_labels_set);
 
     public:
         // Constructor

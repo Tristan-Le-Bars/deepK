@@ -124,6 +124,8 @@ void SequentialModel::ForwardPropagation(int network_position){
             sum_matrix[i] = function.Tanh(sum_matrix[i]);
     }
     neural_matrix[network_position + 1] = sum_matrix;
+    
+    std::cout << "accuracy = " << TestAccuracy(test_set, labels_test_set) << "%" << std::endl;
 }
 
 // AJOUTER LA GESTION DES NEURONES DE BIAIS
@@ -217,6 +219,24 @@ void SequentialModel::BackwardPropagation(std::vector<double> labels){
     // neural_matrix[network_position] = output;
 }
 
+double SequentialModel::TestAccuracy(std::vector<double> test_set; std::vector<double> test_labels_set){
+    int correct_prediction = 0;
+    double accuracy;
+
+    for(int i = 0; i < test_set.size(); i++){
+        neural_matrix[0] = test_set[i];
+        for(int j = 0; j < neural_matrix.size(); j++){
+            ForwardPropagation(j);
+            auto it = std::max_element(neural_matrix.back().begin(), neural_matrix.back().end());
+            int position = std::distance(neural_matrix.back().begin(), it);
+            if(position = test_labels_set[i])
+                correct_prediction++;
+        }
+    }
+    accuracy = correct_prediction * 100 / test_set.size();
+    return accuracy;
+}
+
 
 void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function){
     std::vector<double> neurons(neurons_nbr, 0);
@@ -260,7 +280,7 @@ void SequentialModel::Compile(){
     }
 }
 
-void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> labels_set, int epochs){
+void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> train_labels_set, int epochs){
     std::cout << "neural map:" << std::endl;
     for(int i = 0;i<neural_matrix.size(); i++){
         for(int j = 0;j<neural_matrix[i].size(); j++){
@@ -288,6 +308,6 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
         for(int j = 0; j < neural_matrix.size() - 1; j++){
             ForwardPropagation(j);
         }
-        BackwardPropagation(labels_set);
+        BackwardPropagation(train_labels_set);
     }
 }
