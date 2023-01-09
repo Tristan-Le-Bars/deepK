@@ -10,7 +10,7 @@ class LossFunctions {
         ~LossFunctions();
 
         // Methods
-        void MeanSquaredError(std::vector<double> labels, std::vector<double> output_values, std::vector<double> *loss);
+        void MeanSquaredError(double label, std::vector<double> output_values, std::vector<double> *loss);
         std::vector<double> BinaryCrossEntropy(std::vector<double> labels, std::vector<double> output_values);
         std::vector<double> Hinge(std::vector<double> labels, std::vector<double> output_values);
 };

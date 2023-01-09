@@ -11,13 +11,11 @@ LossFunctions::LossFunctions(/* args */){}
 LossFunctions::~LossFunctions(){}
 
 // Methods
-void LossFunctions::MeanSquaredError(std::vector<double> labels, std::vector<double> output_values, std::vector<double> *loss){
+void LossFunctions::MeanSquaredError(double label, std::vector<double> output_values, std::vector<double> *loss){
     std::vector<double> loss_buffer;
 
-    std::cout << "output values size = " << output_values.size() << std::endl;
-
     for(int i = 0; i < output_values.size(); i++){
-        loss_buffer.push_back((labels[i] - output_values[i]) * (labels[i] - output_values[i]));
+        loss_buffer.push_back((label - output_values[i]) * (label - output_values[i]));
     }
 
     *loss = loss_buffer;
