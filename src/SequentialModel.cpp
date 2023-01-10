@@ -70,7 +70,7 @@ std::vector<std::vector<double>> SequentialModel::MatrixTransposition(std::vecto
     return transposed;
 }
 
-double SequentialModel::GaussianRand(){
+double SequentialModel::NormalDistribution(){
     std::default_random_engine generator(time(0));
     std::normal_distribution<double> distribution(0.0,1.0);
 
@@ -98,7 +98,7 @@ void SequentialModel::ForwardPropagation(int network_position,
 
     /* Apply the activation function*/
     for(int i = 0; i < sum_matrix.size(); i++){
-        // sum_matrix[i] += bias[network_position]; // ICI AJOUTER LA GESTION DES BIAIS
+        sum_matrix[i] += bias[network_position];
         if(activation_function == "Logistic")
             sum_matrix[i] = function.Logistic(sum_matrix[i]);
         if(activation_function == "ReLU")
@@ -116,12 +116,12 @@ void SequentialModel::BackwardPropagation(double label,
     double LABELS_NUM = 1; // rendre changeable en foonction du dataset
     LossFunctions function;
     ActivationFunctions ActivationFunctions;
-    std::vector<double> outputs = neural_matrix[neural_matrix.size() - 1];
+    std::vector<double> outputs = neural_matrix.back();
     std::vector<double> loss;
     std::vector<double> output_layer_errors;
     std::vector<double> difference;
     std::vector<std::vector<double>> impact;
-    std::vector<std::vector<double>> bias_modif;
+    std::vector<double> bias_modif;
     std::vector<std::vector<double>> difference_buffer;
     std::vector<std::vector<double>> neural_matrix_buffer;
     std::vector<std::vector<double>> labels_range;
@@ -129,6 +129,9 @@ void SequentialModel::BackwardPropagation(double label,
     std::vector<std::vector<double>> der_prev_input;
     std::vector<double> impact_rate;
     double accuracy;
+    double layer_error_sum;
+    double delta = label - outputs[0];
+    std::cout << "output = " << outputs[0] << "; label = " << label << "; ";
 
     
     labels_range.push_back(std::vector<double>());
@@ -175,11 +178,9 @@ void SequentialModel::BackwardPropagation(double label,
         if(activation_functions_matrix[i] == "Logistic")
             der_prev_input = MatrixMultiplication(difference_buffer, synaptic_matrix[i]);
             for(int j = 0; j < der_prev_input[0].size(); j++){
-                der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedLogistic(neural_matrix[i][j]);
+/*dz*/          der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedLogistic(neural_matrix[i][j]);
             }
 
-/*dw2*/ impact = MatrixMultiplication(labels_range,
-                                      MatrixMultiplication(der_prev_input,MatrixTransposition(neural_matrix_buffer)));
 
         /* Mettre les autre dérivée de fonction d'activation
             // matrix product of ouput x synaptic weight * derivated function of the neurones values
@@ -188,14 +189,17 @@ void SequentialModel::BackwardPropagation(double label,
         if(activation_functions_matrix[i] == "Tanh")
             // matrix product of ouput x synaptic weight * derivated function of the neurones values 
         */
-        
 
-        // met à jour tout les neurones de la couche
+/*dw*/  impact = MatrixMultiplication(labels_range,
+                                      MatrixMultiplication(der_prev_input,MatrixTransposition(neural_matrix_buffer)));
+        
+        for(int j = 0; j < der_prev_input[0].size(); j++){
+/*db*/        bias_modif.push_back(learning_rate * der_prev_input[0][j]);
+        }
+
         for(int j = 0; j < impact[0].size(); j++){
             impact_rate.push_back(learning_rate * impact[0][j]);
         }
-
-
 
         for(int j = 0; j < synaptic_matrix[i].size(); j++){
             for(int k = 0; k < synaptic_matrix[i][j].size(); k++){
@@ -204,6 +208,8 @@ void SequentialModel::BackwardPropagation(double label,
         }
 
         /*GESTION DES BIAS À FAIRE PLUS TARD*/
+        layer_error_sum = std::accumulate(der_prev_input[0].begin(), der_prev_input[0].end(), 0.0);
+        bias[i] = bias[i] - learning_rate * layer_error_sum;
         // bias_modif = MatrixMultiplication(MatrixMultiplication(labels_range, difference_buffer), der_prev_input);
         // bias[i] = bias[i] - (learning_rate * bias_modif);
     }
@@ -214,27 +220,32 @@ double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
                                      std::vector<double> test_labels_set){
     int correct_prediction = 0;
     double accuracy;
-
+    // std::cout << std::endl;
     for(int i = 0; i < test_set.size(); i++){
+    // std::cout << std::endl;
         neural_matrix[0] = test_set[i];
         for(int j = 0; j < neural_matrix.size() - 1; j++){
             ForwardPropagation(j, test_set, test_labels_set);
         }
         // auto it = std::max_element(neural_matrix.back().begin(), neural_matrix.back().end());
         // int position = std::distance(neural_matrix.back().begin(), it);
-        if((neural_matrix.back()[0] < 0.5 && test_labels_set[i]) == 0 ||
-           (neural_matrix.back()[0] > 0.5 && test_labels_set[i]) == 1){
+        std::cout << "output = " << neural_matrix.back()[0] << std::endl;
+        std::cout << "label = " << test_labels_set[i] << std::endl;
+        if((neural_matrix.back()[0] < 0.25 && test_labels_set[i]) == 0 ||
+           (neural_matrix.back()[0] > 0.75 && test_labels_set[i]) == 1){
             correct_prediction++;
+            std::cout << "yes" <<std::endl;
            }
+    // std::cout << std::endl;
     }
+    // std::cout << std::endl;
     // for(int i = 0;i < neural_matrix.back().size(); i++){
     //     std::cout << neural_matrix.back()[i] << " ";
     // } 
     // std::cout << std::endl;
     // std::cout << "test_labels_set size = " << test_set.size() << std::endl;
     // std::cout << "correct prediction = " << correct_prediction << std::endl;
-    accuracy = (correct_prediction * 100) / test_set.size();
-    // std::cout << "real accuracy = " << accuracy << std::endl;
+    accuracy = (correct_prediction * 100.0) / test_set.size();
 
     return accuracy;
 }
@@ -279,6 +290,10 @@ void SequentialModel::Compile(){
                 synaptic_matrix[i][j][k] = distribution(generator);
             }
         }
+    }
+
+    for(int i = 0; i < neural_matrix.size() - 2; i++){
+        bias.push_back(NormalDistribution());
     }
 }
 
