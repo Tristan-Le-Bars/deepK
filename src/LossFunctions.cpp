@@ -11,14 +11,16 @@ LossFunctions::LossFunctions(/* args */){}
 LossFunctions::~LossFunctions(){}
 
 // Methods
-void LossFunctions::MeanSquaredError(double label, std::vector<double> output_values, std::vector<double> *loss){
-    std::vector<double> loss_buffer;
+double LossFunctions::MeanSquaredError(double label, std::vector<double> output_values){
 
-    for(int i = 0; i < output_values.size(); i++){
-        loss_buffer.push_back((label - output_values[i]) * (label - output_values[i]));
+    double error = 0;
+    double data_size = output_values.size();
+
+    for (int i = 0; i < data_size; i++) {
+        error += std::pow(output_values[i] - label, 2);
     }
-
-    *loss = loss_buffer;
+    error /= data_size;
+    return error;
 }
 
 std::vector<double> LossFunctions::BinaryCrossEntropy(std::vector<double> labels, std::vector<double> output_values){
