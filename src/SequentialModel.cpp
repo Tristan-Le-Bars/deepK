@@ -198,20 +198,22 @@ void SequentialModel::BackwardPropagation(double label,
         //     std::cout << "     ";
         // }
         std::cout << std::endl << std::endl;;
+        der_prev_input = MatrixMultiplication(difference_buffer, synaptic_matrix[i]);
         if(activation_functions_matrix[i] == "Logistic")
-            der_prev_input = MatrixMultiplication(difference_buffer, synaptic_matrix[i]);
             for(int j = 0; j < der_prev_input[0].size(); j++){
 /*dz*/          der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedLogistic(neural_matrix[i][j]);
             }
-
-
-        /* Mettre les autre dérivée de fonction d'activation
             // matrix product of ouput x synaptic weight * derivated function of the neurones values
-        if(activation_functions_matrix[i] == "ReLU")
-            // matrix product of ouput x synaptic weight * derivated function of the neurones values
-        if(activation_functions_matrix[i] == "Tanh")
-            // matrix product of ouput x synaptic weight * derivated function of the neurones values 
-        */
+        if(activation_functions_matrix[i] == "ReLU"){
+            for(int j = 0; j < der_prev_input[0].size(); j++){
+/*dz*/          der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedReLU(neural_matrix[i][j]);
+            }
+        }
+        if(activation_functions_matrix[i] == "Tanh"){
+            for(int j = 0; j < der_prev_input[0].size(); j++){
+/*dz*/          der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedTanh(neural_matrix[i][j]);
+            }
+        }
 
 /*dw*/  impact = MatrixMultiplication(labels_range,
                                       MatrixMultiplication(der_prev_input,MatrixTransposition(neural_matrix_buffer)));
