@@ -12,44 +12,33 @@ LossFunctions::~LossFunctions(){}
 
 // Methods
 double LossFunctions::MeanSquaredError(double label, std::vector<double> output_values){
-
-    double error = 0;
+    double loss = 0;
     double data_size = output_values.size();
 
     for (int i = 0; i < data_size; i++) {
-        error += std::pow(output_values[i] - label, 2);
+        loss += std::pow(output_values[i] - label, 2);
     }
-    error /= data_size;
-    return error;
+    loss /= data_size;
+    return loss;
 }
 
-std::vector<double> LossFunctions::BinaryCrossEntropy(std::vector<double> labels, std::vector<double> output_values){
+double LossFunctions::BinaryCrossEntropy(double label, std::vector<double> output_values){
     /* Make sure the labels are 0 and 1, else, change them to 0 and 1*/
-    std::vector<double> loss;
+    double loss = 0;
+    double data_size = output_values.size();
 
-    for(int i = 0; i < labels.size(); i++){
-        if(labels[i] == 1)
-            loss.push_back(-std::log10(output_values[i]));
-        if(labels[i] == 0)
-            loss.push_back(-std::log10(1-output_values[i]));
+    for (int i = 0; i < data_size; i++) {
+        loss += label * log(output_values[i]) + (1 - label) * log(1 - output_values[i]);
     }
-
-    return loss;
+    return -loss / data_size;
 }
 
-std::vector<double> LossFunctions::Hinge(std::vector<double> labels, std::vector<double> output_values){
-    std::vector<double> loss;
-    std::vector<double> buffer;
+double LossFunctions::Hinge(double label, std::vector<double> output_values){
+    double loss = 0;
+    double data_size = output_values.size();
 
-    for(int i = 0; i < labels.size(); i++){
-        if(labels[i] == 0)
-            labels[i] = -1;
+    for (int i = 0; i < data_size; i++) {
+        loss += std::max(0.0, 1 - label * output_values[i]);
     }
-
-    for(int i = 0; i < labels.size(); i++){
-        buffer = {0, 1 - labels[i] * output_values[i]};
-        loss.push_back(*std::max_element(buffer.begin(), buffer.end()));
-    }
-
-    return loss;
+    return loss / data_size;
 }

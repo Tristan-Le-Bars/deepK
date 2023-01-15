@@ -11,8 +11,8 @@ class LossFunctions {
 
         // Methods
         double MeanSquaredError(double label, std::vector<double> output_values);
-        std::vector<double> BinaryCrossEntropy(std::vector<double> labels, std::vector<double> output_values);
-        std::vector<double> Hinge(std::vector<double> labels, std::vector<double> output_values);
+        double BinaryCrossEntropy(double label, std::vector<double> output_values);
+        double Hinge(double label, std::vector<double> output_values);
 };
 
 #endif CLASS_LOSS_FUNCTIONS

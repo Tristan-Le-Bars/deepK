@@ -150,17 +150,13 @@ void SequentialModel::BackwardPropagation(double label,
     if(loss_function == "mean_squared")
         loss = function.MeanSquaredError(label, outputs); //Etotal
 
+    if(loss_function == "binary_cross_entropy")
+        loss = function.BinaryCrossEntropy(label, outputs);
+
+    if(loss_function == "hinge")
+        loss = function.Hinge(label, outputs);
+
     losses_history.push_back(loss);
-    /*AJOUTER LES AUTRES FONCTION DE LOSS*/
-    // if(loss_function == "binary_cross_entropy")
-    //     loss = function.BinaryCrossEntropy(labels, outputs);
-    // if(loss_function == "hinge"){
-    //     for(int i = 0; i < labels_buffer.size(); i++){
-    //         if(!labels_buffer[i] == 0.0)
-    //             labels_buffer[i] = -1;
-    //     }
-    //     loss = function.Hinge(labels_buffer, outputs);
-    // }
 
     difference_buffer.push_back(std::vector<double>());
     difference_buffer[0].push_back(outputs[0] - label);
