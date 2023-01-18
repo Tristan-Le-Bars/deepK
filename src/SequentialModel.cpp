@@ -116,36 +116,17 @@ void SequentialModel::ForwardPropagation(int network_position,
 void SequentialModel::BackwardPropagation(double label,
                                           std::vector<std::vector<double>> test_set,
                                           std::vector<double> labels_test_set){
-    double LABELS_NUM = 2; // rendre changeable en foonction du dataset
     LossFunctions function;
     ActivationFunctions ActivationFunctions;
     std::vector<double> outputs = neural_matrix.back();
     double loss;
-    std::vector<std::vector<double>> loss_container;
-    std::vector<double> output_layer_errors;
-    std::vector<double> difference;
-    std::vector<std::vector<double>> impact;
-    std::vector<double> bias_modif;
-    std::vector<std::vector<double>> difference_buffer;
-    std::vector<std::vector<double>> neural_matrix_buffer;
-    std::vector<std::vector<double>> labels_range;
-    std::vector<std::vector<double>> der_prev_input;
-    std::vector<double> impact_rate;
-    std::vector<double> output_weigths_cost;
     double accuracy;
-    double layer_error_sum;
-    double error = label - outputs[0];
-    std::vector<std::vector<double>> weights_update_value;
+    double output_error;
 
     std::cout << "output = " << outputs[0] << "; label = " << label << "; ";
     accuracy = TestAccuracy(test_set, labels_test_set);
     std::cout << "accuracy = " << accuracy << std::endl;
     accurarcies_history.push_back(accuracy);
-
-    
-    labels_range.push_back(std::vector<double>());
-    labels_range[0].push_back(1.0 / LABELS_NUM);
-
 
     if(loss_function == "mean_squared")
         loss = function.MeanSquaredError(label, outputs); //Etotal
@@ -158,86 +139,49 @@ void SequentialModel::BackwardPropagation(double label,
 
     losses_history.push_back(loss);
 
-    difference_buffer.push_back(std::vector<double>());
-    difference_buffer[0].push_back(outputs[0] - label);
-    /* Update weights at the output */
+    output_error = outputs[0] - label;
 
-        /*Set the loss in a 2D vector*/
-    loss_container.push_back(std::vector<double>());
-    loss_container[0].push_back(loss);
-
-    neural_matrix_buffer.push_back(neural_matrix[neural_matrix.size() - 2]);
-
-    //ICI
-    //print le difference buffer
-    //print la neural_matrix_buffer
-    weights_update_value = MatrixMultiplication(labels_range, MatrixMultiplication(difference_buffer, neural_matrix_buffer));
-
-
-    for(int i = 0; i < synaptic_matrix.back().size(); i++){
-        for(int j = 0; j < synaptic_matrix.back()[i].size(); j++){
-            std::cout << "weights_update_value = " << weights_update_value[0][j] << std::endl;
-            synaptic_matrix.back()[i][j] -= weights_update_value[0][j];
-        }
-    }
-    neural_matrix_buffer.pop_back();
 
     
+    std::vector<std::vector<double>> hidden_errors(synaptic_matrix.size() - 1);
 
-    for(int i = synaptic_matrix.size() - 2; i >= 0; i--){
-        neural_matrix_buffer.push_back(neural_matrix[i + 1]);
-        // std::cout << "synaptic_matrix[" << i << "] = " << std::endl;
-        // for(int j = 0; j < synaptic_matrix[i].size(); j++){
-        //     for(int k = 0; k < synaptic_matrix[i][j].size(); k++){
-        //         std::cout << synaptic_matrix[i][j][k] << " ";
-        //     }
-        //     std::cout << "     ";
+    for(int i = synaptic_matrix.size() - 1; i > 0; i--){
+        hidden_errors[i-1].resize(synaptic_matrix[i].size());
+        for (int j = 0; j < synaptic_matrix[i].size(); j++) {
+            double error = 0;
+            for (int k = 0; k < synaptic_matrix[i][j].size(); k++) {
+                error += synaptic_matrix[i][k][j] * output_error;
+            }
+            hidden_errors[i-1][j] = error;
+        }
+        // if(activation_functions_matrix[i] == "Logistic"){
+        //     std::cout << "not implemented" << std::endl;
         // }
-        std::cout << std::endl << std::endl;;
-        der_prev_input = MatrixMultiplication(difference_buffer, synaptic_matrix[i]);
-        if(activation_functions_matrix[i] == "Logistic")
-            for(int j = 0; j < der_prev_input[0].size(); j++){
-/*dz*/          der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedLogistic(neural_matrix[i][j]);
-            }
-            // matrix product of ouput x synaptic weight * derivated function of the neurones values
-        if(activation_functions_matrix[i] == "ReLU"){
-            for(int j = 0; j < der_prev_input[0].size(); j++){
-/*dz*/          der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedReLU(neural_matrix[i][j]);
-            }
-        }
-        if(activation_functions_matrix[i] == "Tanh"){
-            for(int j = 0; j < der_prev_input[0].size(); j++){
-/*dz*/          der_prev_input[0][j] = der_prev_input[0][j] * ActivationFunctions.DerivatedTanh(neural_matrix[i][j]);
-            }
-        }
 
-/*dw*/  impact = MatrixMultiplication(labels_range,
-                                      MatrixMultiplication(der_prev_input,MatrixTransposition(neural_matrix_buffer)));
 
-        for(int j = 0; j < der_prev_input[0].size(); j++){
-/*db*/        bias_modif.push_back(learning_rate * der_prev_input[0][j]);
-        }
+        // if(activation_functions_matrix[i] == "ReLU"){
+        //     std::cout << "not implemented" << std::endl;
+        // }
 
-        for(int j = 0; j < impact[0].size(); j++){
-            impact_rate.push_back(learning_rate * impact[0][j]);
-            // std::cout << "impact = " << impact_rate[j] << std::endl;
-        }
-
-        for(int j = 0; j < synaptic_matrix[i].size(); j++){
-            for(int k = 0; k < synaptic_matrix[i][j].size(); k++){
-                // std::cout << "impact after = " << impact_rate[j] << std::endl;
-                synaptic_matrix[i][j][k] = synaptic_matrix[i][j][k] - impact_rate[j];
-            }
-        }
-
-        /*GESTION DES BIAS À FAIRE PLUS TARD*/
-        layer_error_sum = std::accumulate(der_prev_input[0].begin(), der_prev_input[0].end(), 0.0);
-        bias[i] = bias[i] - learning_rate * layer_error_sum;
-        // bias_modif = MatrixMultiplication(MatrixMultiplication(labels_range, difference_buffer), der_prev_input);
-        // bias[i] = bias[i] - (learning_rate * bias_modif);
-        neural_matrix_buffer.pop_back();
+        // if(activation_functions_matrix[i] == "Tanh"){
+        //     std::cout << "not implemented" << std::endl;
+        // }
     }
-    // neural_matrix[network_position] = output;
+
+    for (int i = synaptic_matrix.size() - 1; i >= 0; i--) {
+        for (int j = 0; j < synaptic_matrix[i].size(); j++) {
+            double delta = 0;
+            if (i == synaptic_matrix.size() - 1) {
+                delta = output_error * ActivationFunctions.DerivatedLogistic(outputs[0]);
+            } else {
+                delta = hidden_errors[i][j] * ActivationFunctions.DerivatedLogistic(outputs[0]);
+            }
+            bias[i] -= learning_rate * delta;
+            for (int k = 0; k < synaptic_matrix[i][j].size(); k++) {
+                synaptic_matrix[i][j][k] -= learning_rate * delta * neural_matrix[0][k];
+            }
+        }
+    }
 }
 
 double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
@@ -246,8 +190,14 @@ double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
     double accuracy;
     // std::cout << std::endl;
     for(int i = 0; i < test_set.size(); i++){
-    // std::cout << std::endl;
+        // std::cout << "neural_matrix[0] = " << std::endl;
+
         neural_matrix[0] = test_set[i];
+        // for(int j = 0; j < neural_matrix[0].size(); j++){
+        //     std::cout << neural_matrix[0][j] << " "; 
+        // }
+        // std::cout << std::endl;
+
         for(int j = 0; j < neural_matrix.size() - 1; j++){
             ForwardPropagation(j, test_set, test_labels_set);
         }
@@ -341,40 +291,45 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
         std::cout << std::endl;
     }
 
-    std::cout << std::endl << "neural_matrix size = " << neural_matrix.size() << std::endl;
 
     for(int i = 0; i < epochs; i++){
         neural_matrix[0] = training_set[i];
-        std::cout << "Epoch: " << i << " ---> ";
-        for(int j = 0; j < neural_matrix.size() - 1; j++){
-            ForwardPropagation(j, test_set, test_labels_set);
-        }
-        BackwardPropagation(train_labels_set[i], test_set, test_labels_set);
 
+        /*Display values in the neural network*/
         std::cout << "bias map:" << std::endl;
-        for(int i = 0;i < bias.size(); i++){
-            std::cout << bias[i] << " ";    
+        for(int j = 0;j < bias.size(); j++){
+            std::cout << bias[j] << " ";    
         }
         std::cout << std::endl;
 
         std::cout << "neural map:" << std::endl;
-        for(int i = 0;i<neural_matrix.size(); i++){
-            for(int j = 0;j<neural_matrix[i].size(); j++){
-                std::cout << neural_matrix[i][j] << " ";
+        for(int j = 0; j < neural_matrix.size(); j++){
+            for(int k = 0; k < neural_matrix[j].size(); k++){
+                std::cout << neural_matrix[j][k] << " ";
             }
             std::cout << std::endl;
         }
         std::cout << "synaptic map:" << std::endl;
-        for(int i = 0;i<synaptic_matrix.size(); i++){
-            for(int j = 0;j<synaptic_matrix[i].size(); j++){
-                for(int k = 0;k<synaptic_matrix[i][j].size();k++){
-                    std::cout << synaptic_matrix[i][j][k] << " ";
+        for(int j = 0; j < synaptic_matrix.size(); j++){
+            for(int k = 0; k < synaptic_matrix[j].size(); k++){
+                for(int l = 0; l < synaptic_matrix[j][k].size(); l++){
+                    std::cout << synaptic_matrix[j][k][l] << " ";
                 }
                 std::cout << "     ";
             }
             std::cout << std::endl;
         }
         std::cout << std::endl;
+
+
+
+        std::cout << "Epoch: " << i << " ---> ";
+        for(int j = 0; j < neural_matrix.size() - 1; j++){
+            ForwardPropagation(j, test_set, test_labels_set);
+        }
+        BackwardPropagation(train_labels_set[i], test_set, test_labels_set);
+
+
     }
 }
 
