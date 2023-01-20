@@ -203,8 +203,8 @@ double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
         }
         // std::cout << "output = " << neural_matrix.back()[0] << std::endl;
         // std::cout << "label = " << test_labels_set[i] << std::endl;
-        if((neural_matrix.back()[0] < 0.45 && test_labels_set[i] == 0.0) ||
-           (neural_matrix.back()[0] > 0.55 && test_labels_set[i] == 1.0)){
+        if((neural_matrix.back()[0] < 0.50 && test_labels_set[i] == 0.0) ||
+           (neural_matrix.back()[0] >= 0.50 && test_labels_set[i] == 1.0)){
             correct_prediction++;
             // std::cout << "yes" <<std::endl;
            }
@@ -272,6 +272,11 @@ void SequentialModel::Compile(){
 void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> train_labels_set,
                             std::vector<std::vector<double>> test_set, std::vector<double> test_labels_set,
                             int epochs){
+
+    if(epochs == 0){
+        epochs = training_set.size();
+    }
+
     std::cout << "neural map:" << std::endl;
     for(int i = 0;i<neural_matrix.size(); i++){
         for(int j = 0;j<neural_matrix[i].size(); j++){
@@ -291,35 +296,35 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
         std::cout << std::endl;
     }
 
-
+    
     for(int i = 0; i < epochs; i++){
         neural_matrix[0] = training_set[i];
 
         /*Display values in the neural network*/
-        std::cout << "bias map:" << std::endl;
-        for(int j = 0;j < bias.size(); j++){
-            std::cout << bias[j] << " ";    
-        }
-        std::cout << std::endl;
+            // std::cout << "bias map:" << std::endl;
+            // for(int j = 0;j < bias.size(); j++){
+            //     std::cout << bias[j] << " ";    
+            // }
+            // std::cout << std::endl;
 
-        std::cout << "neural map:" << std::endl;
-        for(int j = 0; j < neural_matrix.size(); j++){
-            for(int k = 0; k < neural_matrix[j].size(); k++){
-                std::cout << neural_matrix[j][k] << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << "synaptic map:" << std::endl;
-        for(int j = 0; j < synaptic_matrix.size(); j++){
-            for(int k = 0; k < synaptic_matrix[j].size(); k++){
-                for(int l = 0; l < synaptic_matrix[j][k].size(); l++){
-                    std::cout << synaptic_matrix[j][k][l] << " ";
-                }
-                std::cout << "     ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
+            // std::cout << "neural map:" << std::endl;
+            // for(int j = 0; j < neural_matrix.size(); j++){
+            //     for(int k = 0; k < neural_matrix[j].size(); k++){
+            //         std::cout << neural_matrix[j][k] << " ";
+            //     }
+            //     std::cout << std::endl;
+            // }
+            // std::cout << "synaptic map:" << std::endl;
+            // for(int j = 0; j < synaptic_matrix.size(); j++){
+            //     for(int k = 0; k < synaptic_matrix[j].size(); k++){
+            //         for(int l = 0; l < synaptic_matrix[j][k].size(); l++){
+            //             std::cout << synaptic_matrix[j][k][l] << " ";
+            //         }
+            //         std::cout << "     ";
+            //     }
+            //     std::cout << std::endl;
+            // }
+            // std::cout << std::endl;
 
 
 
@@ -328,8 +333,6 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
             ForwardPropagation(j, test_set, test_labels_set);
         }
         BackwardPropagation(train_labels_set[i], test_set, test_labels_set);
-
-
     }
 }
 

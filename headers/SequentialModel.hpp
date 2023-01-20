@@ -50,7 +50,7 @@ class SequentialModel{
         void Train(std::vector<std::vector<double>> training_set,
                    std::vector<double> labels_set,
                    std::vector<std::vector<double>> test_set,
-                   std::vector<double> test_labels_set, int epochs);
+                   std::vector<double> test_labels_set, int epochs = 0);
         void DisplayAccuraciesHistory();
         void DisplayLossesHistory();
 
