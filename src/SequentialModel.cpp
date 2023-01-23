@@ -112,7 +112,6 @@ void SequentialModel::ForwardPropagation(int network_position,
     neural_matrix[network_position + 1] = sum_matrix;
 }
 
-// AJOUTER LA GESTION DES NEURONES DE BIAIS
 void SequentialModel::BackwardPropagation(double label,
                                           std::vector<std::vector<double>> test_set,
                                           std::vector<double> labels_test_set){
@@ -178,7 +177,12 @@ void SequentialModel::BackwardPropagation(double label,
             if (i == synaptic_matrix.size() - 1) {
                 delta = output_error * ActivationFunctions.DerivatedLogistic(outputs[0]);
             } else {
-                delta = hidden_errors[i][j] * ActivationFunctions.DerivatedLogistic(outputs[0]);
+                if(activation_functions_matrix[i] == "Logistic")
+                    delta = hidden_errors[i][j] * ActivationFunctions.DerivatedLogistic(outputs[0]);
+                if(activation_functions_matrix[i] == "ReLU")
+                    delta = hidden_errors[i][j] * ActivationFunctions.DerivatedReLU(outputs[0]);
+                if(activation_functions_matrix[i] == "Tanh")
+                    delta = hidden_errors[i][j] * ActivationFunctions.DerivatedTanh(outputs[0]);
             }
             bias[i] -= learning_rate * delta;
             for (int k = 0; k < synaptic_matrix[i][j].size(); k++) {

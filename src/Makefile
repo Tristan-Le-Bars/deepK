@@ -17,4 +17,6 @@ deepK_lib:
 .PHONY: clean
 
 clean:
-	rm deepK_test
+	rm -f *.o
+	rm -f *.pdf
+	rm -f deepK_test
