@@ -127,6 +127,9 @@ void SequentialModel::BackwardPropagation(double label,
     accuracy = TestAccuracy(test_set, labels_test_set);
     std::cout << "accuracy = " << accuracy << std::endl;
     accurarcies_history.push_back(accuracy);
+    if(accuracy > accuracies_historical_bests.back()){
+        accuracies_historical_bests.push_back(accuracy);
+    }
 
     if(loss_function == "mean_squared")
         loss = function.MeanSquaredError(label, outputs); //Etotal
@@ -138,6 +141,7 @@ void SequentialModel::BackwardPropagation(double label,
         loss = function.Hinge(label, outputs);
 
     losses_history.push_back(loss);
+    
 
     output_error = outputs[0] - label;
 
@@ -188,35 +192,20 @@ double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
                                      std::vector<double> test_labels_set){
     int correct_prediction = 0;
     double accuracy;
-    // std::cout << std::endl;
-    for(int i = 0; i < test_set.size(); i++){
-        // std::cout << "neural_matrix[0] = " << std::endl;
 
+    for(int i = 0; i < test_set.size(); i++){
         neural_matrix[0] = test_set[i];
-        // for(int j = 0; j < neural_matrix[0].size(); j++){
-        //     std::cout << neural_matrix[0][j] << " "; 
-        // }
-        // std::cout << std::endl;
 
         for(int j = 0; j < neural_matrix.size() - 1; j++){
             ForwardPropagation(j, test_set, test_labels_set);
         }
-        // std::cout << "output = " << neural_matrix.back()[0] << std::endl;
-        // std::cout << "label = " << test_labels_set[i] << std::endl;
+        
         if((neural_matrix.back()[0] < 0.50 && test_labels_set[i] == 0.0) ||
            (neural_matrix.back()[0] >= 0.50 && test_labels_set[i] == 1.0)){
             correct_prediction++;
-            // std::cout << "yes" <<std::endl;
            }
-    // std::cout << std::endl;
     }
-    // std::cout << std::endl;
-    // for(int i = 0;i < neural_matrix.back().size(); i++){
-    //     std::cout << neural_matrix.back()[i] << " ";
-    // } 
-    // std::cout << std::endl;
-    // std::cout << "test_labels_set size = " << test_set.size() << std::endl;
-    // std::cout << "correct prediction = " << correct_prediction << std::endl;
+    
     accuracy = (correct_prediction * 100.0) / test_set.size();
 
     return accuracy;
@@ -277,6 +266,8 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
         epochs = training_set.size();
     }
 
+    accuracies_historical_bests.push_back(0.0);
+
     std::cout << "neural map:" << std::endl;
     for(int i = 0;i<neural_matrix.size(); i++){
         for(int j = 0;j<neural_matrix[i].size(); j++){
@@ -299,35 +290,6 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
     
     for(int i = 0; i < epochs; i++){
         neural_matrix[0] = training_set[i];
-
-        /*Display values in the neural network*/
-            // std::cout << "bias map:" << std::endl;
-            // for(int j = 0;j < bias.size(); j++){
-            //     std::cout << bias[j] << " ";    
-            // }
-            // std::cout << std::endl;
-
-            // std::cout << "neural map:" << std::endl;
-            // for(int j = 0; j < neural_matrix.size(); j++){
-            //     for(int k = 0; k < neural_matrix[j].size(); k++){
-            //         std::cout << neural_matrix[j][k] << " ";
-            //     }
-            //     std::cout << std::endl;
-            // }
-            // std::cout << "synaptic map:" << std::endl;
-            // for(int j = 0; j < synaptic_matrix.size(); j++){
-            //     for(int k = 0; k < synaptic_matrix[j].size(); k++){
-            //         for(int l = 0; l < synaptic_matrix[j][k].size(); l++){
-            //             std::cout << synaptic_matrix[j][k][l] << " ";
-            //         }
-            //         std::cout << "     ";
-            //     }
-            //     std::cout << std::endl;
-            // }
-            // std::cout << std::endl;
-
-
-
         std::cout << "Epoch: " << i << " ---> ";
         for(int j = 0; j < neural_matrix.size() - 1; j++){
             ForwardPropagation(j, test_set, test_labels_set);
@@ -344,6 +306,17 @@ void SequentialModel::DisplayAccuraciesHistory(){
     plt::title("history of accuracies obtained during the training");
     plt::savefig("accurarcies_history.pdf");
 }
+
+void SequentialModel::DisplayAccuraciesHistoricalBests(){
+    accuracies_historical_bests.erase(accuracies_historical_bests.begin());
+    plt::figure();
+    plt::plot(accuracies_historical_bests);
+    plt::xlabel("Epoch");
+    plt::ylabel("accuracy");
+    plt::title("Evolution of the best accuracies obtained during training");
+    plt::savefig("accurarcies_historical_bests.pdf");
+}
+
 void SequentialModel::DisplayLossesHistory(){
     plt::figure();
     plt::plot(losses_history);
