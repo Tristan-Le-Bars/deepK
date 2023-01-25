@@ -124,10 +124,8 @@ void SequentialModel::BackwardPropagation(double label,
 
     std::cout << "output = " << outputs[0] << "; label = " << label << "; ";
     accuracy = TestAccuracy(test_set, labels_test_set);
-    std::cout << "accuracy = " << accuracy << std::endl;
-    accurarcies_history.push_back(accuracy);
-    if(accuracy > accuracies_historical_bests.back()){
-        accuracies_historical_bests.push_back(accuracy);
+    if(accuracy > accuracy_historical_bests.back()){
+        accuracy_historical_bests.push_back(accuracy);
     }
 
     if(loss_function == "mean_squared")
@@ -141,11 +139,8 @@ void SequentialModel::BackwardPropagation(double label,
 
     losses_history.push_back(loss);
     
+    output_error = loss;
 
-    output_error = outputs[0] - label;
-
-
-    
     std::vector<std::vector<double>> hidden_errors(synaptic_matrix.size() - 1);
 
     for(int i = synaptic_matrix.size() - 1; i > 0; i--){
@@ -157,18 +152,6 @@ void SequentialModel::BackwardPropagation(double label,
             }
             hidden_errors[i-1][j] = error;
         }
-        // if(activation_functions_matrix[i] == "Logistic"){
-        //     std::cout << "not implemented" << std::endl;
-        // }
-
-
-        // if(activation_functions_matrix[i] == "ReLU"){
-        //     std::cout << "not implemented" << std::endl;
-        // }
-
-        // if(activation_functions_matrix[i] == "Tanh"){
-        //     std::cout << "not implemented" << std::endl;
-        // }
     }
 
     for (int i = synaptic_matrix.size() - 1; i >= 0; i--) {
@@ -196,6 +179,15 @@ double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
                                      std::vector<double> test_labels_set){
     int correct_prediction = 0;
     double accuracy;
+    double precision;
+    double recall;
+    double f1;
+    double sensivity;
+    double specificity;
+    double tp = 0;
+    double tn = 0;
+    double fp = 0;
+    double fn = 0;
 
     for(int i = 0; i < test_set.size(); i++){
         neural_matrix[0] = test_set[i];
@@ -208,9 +200,33 @@ double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
            (neural_matrix.back()[0] >= 0.50 && test_labels_set[i] == 1.0)){
             correct_prediction++;
            }
+
+        if(neural_matrix.back()[0] >= 0.50 && test_labels_set[i] == 1.0)
+            tp++;
+        if(neural_matrix.back()[0] < 0.50 && test_labels_set[i] == 0.0)
+            tn++;
+        if(neural_matrix.back()[0] >= 0.50 && test_labels_set[i] == 0.0)
+            fp++;
+        if(neural_matrix.back()[0] < 0.50 && test_labels_set[i] == 1.0)
+            fn++;
     }
     
-    accuracy = (correct_prediction * 100.0) / test_set.size();
+    accuracy = (tn + tp) / (tn + fp + fn + tp);
+    precision = tp / (tp + fp);
+    recall = tp / (tp+fn);
+    specificity = tn / (tn + fp);
+
+    f1 = 2 * ((precision * recall) / (precision + recall));
+    std::cout << " precision = " << precision << ";";
+    std::cout << " recall = " << recall << ";";
+    // std::cout << " specificity = " << specificity << ";";
+    std::cout << " f1 = " << f1 << ";";
+    std::cout << " accuracy = " << accuracy << std::endl;
+
+    precision_history.push_back(precision);
+    recall_history.push_back(recall);
+    f1_history.push_back(f1);
+    accurarcy_history.push_back(accuracy);
 
     return accuracy;
 }
@@ -270,7 +286,7 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
         epochs = training_set.size();
     }
 
-    accuracies_historical_bests.push_back(0.0);
+    accuracy_historical_bests.push_back(0.0);
 
     std::cout << "neural map:" << std::endl;
     for(int i = 0;i<neural_matrix.size(); i++){
@@ -304,21 +320,53 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
 
 void SequentialModel::DisplayAccuraciesHistory(){
     plt::figure();
-    plt::plot(accurarcies_history);
+    plt::plot(accurarcy_history);
     plt::xlabel("Epoch");
     plt::ylabel("accuracy");
-    plt::title("history of accuracies obtained during the training");
-    plt::savefig("accurarcies_history.pdf");
+    plt::title("history of accuracy obtained during the training");
+    plt::savefig("accurarcy_history.pdf");
+    // plt::show();
+}
+
+void SequentialModel::DisplayPrecisionHistory(){
+    plt::figure();
+    plt::plot(precision_history);
+    plt::xlabel("Epoch");
+    plt::ylabel("precision");
+    plt::title("history of precision obtained during the training");
+    plt::savefig("precision_history.pdf");
+    // plt::show();
+}
+
+void SequentialModel::DisplayRecallHistory(){
+    plt::figure();
+    plt::plot(recall_history);
+    plt::xlabel("Epoch");
+    plt::ylabel("recall");
+    plt::title("history of recall obtained during the training");
+    plt::savefig("recall_history.pdf");
+    // plt::show();
+}
+
+void SequentialModel::DisplayF1History(){
+    plt::figure();
+    plt::plot(f1_history);
+    plt::xlabel("Epoch");
+    plt::ylabel("F1");
+    plt::title("history of f1 obtained during the training");
+    plt::savefig("f1_history.pdf");
+    // plt::show();
 }
 
 void SequentialModel::DisplayAccuraciesHistoricalBests(){
-    accuracies_historical_bests.erase(accuracies_historical_bests.begin());
+    accuracy_historical_bests.erase(accuracy_historical_bests.begin());
     plt::figure();
-    plt::plot(accuracies_historical_bests);
+    plt::plot(accuracy_historical_bests);
     plt::xlabel("Epoch");
     plt::ylabel("accuracy");
     plt::title("Evolution of the best accuracies obtained during training");
     plt::savefig("accurarcies_historical_bests.pdf");
+    // plt::show();
 }
 
 void SequentialModel::DisplayLossesHistory(){
@@ -328,4 +376,5 @@ void SequentialModel::DisplayLossesHistory(){
     plt::ylabel("loss");
     plt::title("history of losses obtained during the training");
     plt::savefig("losses_history.pdf");
+    // plt::show();
 }

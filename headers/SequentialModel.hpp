@@ -14,8 +14,11 @@ class SequentialModel{
         std::vector<std::string> activation_functions_matrix;
         std::string loss_function;
         double learning_rate;
-        std::vector<double> accurarcies_history;
-        std::vector<double> accuracies_historical_bests;
+        std::vector<double> accurarcy_history;
+        std::vector<double> precision_history;
+        std::vector<double> recall_history;
+        std::vector<double> f1_history;
+        std::vector<double> accuracy_historical_bests;
         std::vector<double> losses_history;
 
         std::vector<std::vector<double>> MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix);
@@ -53,6 +56,9 @@ class SequentialModel{
                    std::vector<std::vector<double>> test_set,
                    std::vector<double> test_labels_set, int epochs = 0);
         void DisplayAccuraciesHistory();
+        void DisplayPrecisionHistory();
+        void DisplayRecallHistory();
+        void DisplayF1History();
         void DisplayAccuraciesHistoricalBests();
         void DisplayLossesHistory();
 
