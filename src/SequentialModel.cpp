@@ -80,9 +80,7 @@ double SequentialModel::NormalDistribution(){
     return distribution(generator);
 }
 
-void SequentialModel::ForwardPropagation(int network_position,
-                                         std::vector<std::vector<double>> test_set,
-                                         std::vector<double> labels_test_set){
+void SequentialModel::ForwardPropagation(int network_position){
     ActivationFunctions function; 
     std::string activation_function = activation_functions_matrix[network_position];
     double sum = 0.0;
@@ -193,13 +191,8 @@ double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
         neural_matrix[0] = test_set[i];
 
         for(int j = 0; j < neural_matrix.size() - 1; j++){
-            ForwardPropagation(j, test_set, test_labels_set);
+            ForwardPropagation(j);
         }
-        
-        if((neural_matrix.back()[0] < 0.50 && test_labels_set[i] == 0.0) ||
-           (neural_matrix.back()[0] >= 0.50 && test_labels_set[i] == 1.0)){
-            correct_prediction++;
-           }
 
         if(neural_matrix.back()[0] >= 0.50 && test_labels_set[i] == 1.0)
             tp++;
@@ -312,11 +305,22 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
         neural_matrix[0] = training_set[i];
         std::cout << "Epoch: " << i << " ---> ";
         for(int j = 0; j < neural_matrix.size() - 1; j++){
-            ForwardPropagation(j, test_set, test_labels_set);
+            ForwardPropagation(j);
         }
         BackwardPropagation(train_labels_set[i], test_set, test_labels_set);
     }
 }
+
+double SequentialModel::Predict(std::vector<double> input){
+    neural_matrix[0] = input;
+
+    for(int j = 0; j < neural_matrix.size() - 1; j++){
+        ForwardPropagation(j);
+    }
+
+    return neural_matrix.back()[0];
+}
+
 
 void SequentialModel::DisplayAccuraciesHistory(){
     plt::figure();

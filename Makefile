@@ -9,4 +9,5 @@ deepK_test:
 
 
 clean:
-	rm deepK_test
+	rm -f *.pdf
+	rm -f test_lib

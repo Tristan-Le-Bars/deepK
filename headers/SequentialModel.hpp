@@ -24,7 +24,7 @@ class SequentialModel{
         std::vector<std::vector<double>> MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix);
         std::vector<std::vector<double>> MatrixTransposition(std::vector<std::vector<double>> matrix);
         double NormalDistribution();
-        void ForwardPropagation(int network_position, std::vector<std::vector<double>> test_set, std::vector<double> labels_test_set);
+        void ForwardPropagation(int network_position);
         void BackwardPropagation(double label,
                                  std::vector<std::vector<double>> test_set,
                                  std::vector<double> labels_test_set);
@@ -55,6 +55,7 @@ class SequentialModel{
                    std::vector<double> labels_set,
                    std::vector<std::vector<double>> test_set,
                    std::vector<double> test_labels_set, int epochs = 0);
+        double Predict(std::vector<double> input);
         void DisplayAccuraciesHistory();
         void DisplayPrecisionHistory();
         void DisplayRecallHistory();
