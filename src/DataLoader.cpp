@@ -67,3 +67,9 @@ void DataLoader::RemoveColumn(std::vector<std::vector<std::string>> &dataset, in
     }
 }
 
+void DataLoader::RemoveColumn(std::vector<std::vector<double>> &dataset, int index){
+    for(auto &v : dataset){
+        v.erase(v.begin() + index);
+    }
+}
+

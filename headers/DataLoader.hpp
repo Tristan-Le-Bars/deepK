@@ -19,6 +19,7 @@ class DataLoader{
                           std::vector<std::vector<std::string>> *set_one,
                           std::vector<std::vector<std::string>> *set_two);
         void RemoveColumn(std::vector<std::vector<std::string>> &dataset, int index);
+        void RemoveColumn(std::vector<std::vector<double>> &dataset, int index);
 };
 
 #endif CLASS_DATA_LOADER

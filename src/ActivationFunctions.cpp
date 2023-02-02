@@ -13,7 +13,7 @@ ActivationFunctions::~ActivationFunctions(){}
 
 // Methods
 double ActivationFunctions::Logistic(double x){return (1/(1 + exp(-x)));}
-double ActivationFunctions::ReLU(double x){return std::max(x, 0.0);}
+double ActivationFunctions::ReLU(double x){return std::max(0.0, x);}
 double ActivationFunctions::Tanh(double x){return std::tanh(x);}
 
 double ActivationFunctions::DerivatedLogistic(double x){
@@ -21,7 +21,7 @@ double ActivationFunctions::DerivatedLogistic(double x){
 }
 
 double ActivationFunctions::DerivatedReLU(double x){
-    if(x < 0.0)
+    if(x <= 0.0)
         return 0.0;
     else
         return 1;
