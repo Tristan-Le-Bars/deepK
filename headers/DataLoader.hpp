@@ -18,6 +18,7 @@ class DataLoader{
         void SplitDataset(std::vector<std::vector<std::string>> dataset, double percentage,
                           std::vector<std::vector<std::string>> *set_one,
                           std::vector<std::vector<std::string>> *set_two);
+        void RemoveColumn(std::vector<std::vector<std::string>> &dataset, int index);
 };
 
 #endif CLASS_DATA_LOADER

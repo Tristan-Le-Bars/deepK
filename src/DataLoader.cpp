@@ -61,3 +61,9 @@ void DataLoader::SplitDataset(std::vector<std::vector<std::string>> dataset, dou
     *set_two = set_two_buffer;
 }
 
+void DataLoader::RemoveColumn(std::vector<std::vector<std::string>> &dataset, int index){
+    for(auto &v : dataset){
+        v.erase(v.begin() + index);
+    }
+}
+

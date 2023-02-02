@@ -300,7 +300,6 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
         std::cout << std::endl;
     }
 
-    
     for(int i = 0; i < epochs; i++){
         neural_matrix[0] = training_set[i];
         std::cout << "Epoch: " << i << " ---> ";
