@@ -50,7 +50,8 @@ class SequentialModel{
         int GetInputSize();
 
         void AddLayer(int neurons_nbr, std::string activation_function);
-        void Compile();
+        void UniDistribInit();
+        void HeInit();
         void Train(std::vector<std::vector<double>> training_set,
                    std::vector<double> labels_set,
                    std::vector<std::vector<double>> test_set,
@@ -65,4 +66,4 @@ class SequentialModel{
 
 };
 
-#endif CLASS_SEQUENTIAL_MODEL
+#endif

@@ -18,4 +18,4 @@ class ActivationFunctions {
         double DerivatedTanh(double x);
 };
 
-#endif CLASS_ACTIVATION_FUNCTIONS
+#endif

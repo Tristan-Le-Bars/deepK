@@ -253,10 +253,29 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
     activation_functions_matrix.push_back(activation_function);
 }
 
-void SequentialModel::Compile(){
+void SequentialModel::UniDistribInit(){
     std::random_device rd;
     std::mt19937 generator(rd());
     std::uniform_real_distribution<double> distribution(-1.0, 1.0);
+
+    for(int i = 0; i < synaptic_matrix.size(); i++){
+        for(int j = 0; j < synaptic_matrix[i].size(); j++){
+            for(int k = 0; k < synaptic_matrix[i][j].size(); k++){
+                synaptic_matrix[i][j][k] = distribution(generator);
+            }
+        }
+    }
+
+    for(int i = 0; i < neural_matrix.size() - 2; i++){
+        bias.push_back(NormalDistribution());
+    }
+}
+
+void SequentialModel::HeInit(){
+    double scale = sqrt(2.0 / input_size);
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_real_distribution<> distribution(1, scale);
 
     for(int i = 0; i < synaptic_matrix.size(); i++){
         for(int j = 0; j < synaptic_matrix[i].size(); j++){
@@ -306,6 +325,13 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
         for(int j = 0; j < neural_matrix.size() - 1; j++){
             ForwardPropagation(j);
         }
+    //     std::cout << "neural map:" << std::endl;
+    //     for(int i = 0;i<neural_matrix.size(); i++){
+    //         for(int j = 0;j<neural_matrix[i].size(); j++){
+    //             std::cout << neural_matrix[i][j] << "  ";
+    //         }
+    //     std::cout << std::endl;
+    // }
         BackwardPropagation(train_labels_set[i], test_set, test_labels_set);
     }
 }

@@ -22,4 +22,4 @@ class DataLoader{
         void RemoveColumn(std::vector<std::vector<double>> &dataset, int index);
 };
 
-#endif CLASS_DATA_LOADER
+#endif

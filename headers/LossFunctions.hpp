@@ -15,4 +15,4 @@ class LossFunctions {
         double Hinge(double label, std::vector<double> output_values);
 };
 
-#endif CLASS_LOSS_FUNCTIONS
+#endif
