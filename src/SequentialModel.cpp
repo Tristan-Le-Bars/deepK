@@ -120,6 +120,7 @@ void SequentialModel::BackwardPropagation(double label,
     double accuracy;
     double output_error;
 
+    // changer le calcul de l'output
     std::cout << "output = " << outputs[0] << "; label = " << label << "; ";
     accuracy = TestAccuracy(test_set, labels_test_set);
     if(accuracy > accuracy_historical_bests.back()){
@@ -127,7 +128,7 @@ void SequentialModel::BackwardPropagation(double label,
     }
 
     if(loss_function == "mean_squared")
-        loss = function.MeanSquaredError(label, outputs); //Etotal
+        loss = function.MeanSquaredError(label, outputs);
 
     if(loss_function == "binary_cross_entropy")
         loss = function.BinaryCrossEntropy(label, outputs);
@@ -156,7 +157,13 @@ void SequentialModel::BackwardPropagation(double label,
         for (int j = 0; j < synaptic_matrix[i].size(); j++) {
             double delta = 0;
             if (i == synaptic_matrix.size() - 1) {
-                delta = output_error * ActivationFunctions.DerivatedLogistic(outputs[0]);
+                if(activation_functions_matrix[i] == "Logistic")
+                    delta = output_error * ActivationFunctions.DerivatedLogistic(outputs[0]);
+                if(activation_functions_matrix[i] == "ReLU")
+                    delta = output_error * ActivationFunctions.DerivatedReLU(outputs[0]);
+                if(activation_functions_matrix[i] == "Tanh")
+                    delta = output_error * ActivationFunctions.DerivatedTanh(outputs[0]);
+
             } else {
                 if(activation_functions_matrix[i] == "Logistic")
                     delta = hidden_errors[i][j] * ActivationFunctions.DerivatedLogistic(outputs[0]);
@@ -290,9 +297,12 @@ void SequentialModel::HeInit(){
     }
 }
 
+
 void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> train_labels_set,
                             std::vector<std::vector<double>> test_set, std::vector<double> test_labels_set,
-                            int epochs){
+                            int epochs, unsigned int early_stopping){
+    
+    int stopping_range = 0;
 
     if(epochs == 0){
         epochs = training_set.size();
@@ -300,38 +310,30 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
 
     accuracy_historical_bests.push_back(0.0);
 
-    std::cout << "neural map:" << std::endl;
-    for(int i = 0;i<neural_matrix.size(); i++){
-        for(int j = 0;j<neural_matrix[i].size(); j++){
-            std::cout << neural_matrix[i][j];
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "synaptic map:" << std::endl;
-    for(int i = 0;i<synaptic_matrix.size(); i++){
-        for(int j = 0;j<synaptic_matrix[i].size(); j++){
-            for(int k = 0;k<synaptic_matrix[i][j].size();k++){
-                std::cout << synaptic_matrix[i][j][k] << " ";
-            }
-            std::cout << "     ";
-        }
-        std::cout << std::endl;
-    }
-
     for(int i = 0; i < epochs; i++){
         neural_matrix[0] = training_set[i];
         std::cout << "Epoch: " << i << " ---> ";
         for(int j = 0; j < neural_matrix.size() - 1; j++){
             ForwardPropagation(j);
         }
-    //     std::cout << "neural map:" << std::endl;
-    //     for(int i = 0;i<neural_matrix.size(); i++){
-    //         for(int j = 0;j<neural_matrix[i].size(); j++){
-    //             std::cout << neural_matrix[i][j] << "  ";
-    //         }
-    //     std::cout << std::endl;
-    // }
+        if(early_stopping != 0 && i > early_stopping){
+            for(int j = 0; j < early_stopping; j--){
+                if(accurarcy_history[accurarcy_history.size() - 1 - j] <=
+                *accuracy_historical_bests.end()){
+                    stopping_range++;
+                }
+                else{
+                    stopping_range = 0;
+                    break;
+                }
+            }
+            if(stopping_range == early_stopping){
+                std::cout << "Model's accuracy haven't improved for "
+                << early_stopping << " iterations. Stopping the training." << std::endl;
+                break;
+            }
+        }
+
         BackwardPropagation(train_labels_set[i], test_set, test_labels_set);
     }
 }

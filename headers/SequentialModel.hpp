@@ -55,7 +55,8 @@ class SequentialModel{
         void Train(std::vector<std::vector<double>> training_set,
                    std::vector<double> labels_set,
                    std::vector<std::vector<double>> test_set,
-                   std::vector<double> test_labels_set, int epochs = 0);
+                   std::vector<double> test_labels_set, int epochs = 0,
+                   unsigned int early_stopping = 0);
         double Predict(std::vector<double> input);
         void DisplayAccuraciesHistory();
         void DisplayPrecisionHistory();
