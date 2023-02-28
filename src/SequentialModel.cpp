@@ -100,12 +100,22 @@ void SequentialModel::ForwardPropagation(int network_position){
     /* Apply the activation function*/
     for(int i = 0; i < sum_matrix.size(); i++){
         sum_matrix[i] += bias[network_position];
-        if(activation_function == "Logistic")
-            sum_matrix[i] = function.Logistic(sum_matrix[i]);
-        if(activation_function == "ReLU")
-            sum_matrix[i] = function.ReLU(sum_matrix[i]);
-        if(activation_function == "Tanh")
-            sum_matrix[i] = function.Tanh(sum_matrix[i]);
+        try{
+            if(activation_function == "Logistic")
+                sum_matrix[i] = function.Logistic(sum_matrix[i]);
+            else if(activation_function == "ReLU")
+                sum_matrix[i] = function.ReLU(sum_matrix[i]);
+            else if(activation_function == "Tanh")
+                sum_matrix[i] = function.Tanh(sum_matrix[i]);
+            else{
+                throw(activation_function);
+            }
+        }
+        catch(std::string str){
+            std::cout << std::endl << "ERROR 1: Activation function must be Logistic, ReLU or Tanh." << std::endl;
+            std::cout << "Activation function is " << str << "." << std::endl;
+            exit(1);
+        }
     }
     neural_matrix[network_position + 1] = sum_matrix;
 }
