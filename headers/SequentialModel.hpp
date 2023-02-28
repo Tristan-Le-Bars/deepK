@@ -37,13 +37,16 @@ class SequentialModel{
         // Destructor
         ~SequentialModel();
 
-        // Methods
+        // Seters
+        /*
         void SetLayersNbr(int l);
         void SetNeuralMatrix(std::vector<std::vector<double>> n);
         void SetActivationFuntionMatrix(std::vector<std::string> a);
+        */
         void SetLossFunction(std::string l);
         void SetLearningRate(double lr);
 
+        // Methods
         int GetLayerNbr();
         std::vector<std::vector<double>> GetNeuralMatrix();
         std::vector<std::string> GetActivationFunctionMatrix();

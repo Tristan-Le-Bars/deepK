@@ -26,10 +26,25 @@ SequentialModel::SequentialModel(int input_s){
 SequentialModel::~SequentialModel(){}
 
 // Seters
+/*
 void SequentialModel::SetLayersNbr(int l){layers_nbr = l;};
 void SequentialModel::SetNeuralMatrix(std::vector<std::vector<double>> n){neural_matrix = n;};
 void SequentialModel::SetActivationFuntionMatrix(std::vector<std::string> a){activation_functions_matrix = a;};
-void SequentialModel::SetLossFunction(std::string l){loss_function = l;}
+*/
+void SequentialModel::SetLossFunction(std::string l){
+    try{
+        if(l == "mean_squared" || l == "binary_cross_entropy" || l == "hinge")
+            loss_function = l;
+        else
+            throw(l);
+    }
+    catch(std::string str){
+        std::cout << std::endl << "ERROR 1: Loss function must be mean_squared, binary_cross_entropy or hinge." << std::endl;
+        std::cout << "Loss function is " << str << "." << std::endl;
+        exit(1);
+    }
+}
+
 void SequentialModel::SetLearningRate(double lr){learning_rate = lr;}
 
 // Geters
@@ -112,9 +127,9 @@ void SequentialModel::ForwardPropagation(int network_position){
             }
         }
         catch(std::string str){
-            std::cout << std::endl << "ERROR 1: Activation function must be Logistic, ReLU or Tanh." << std::endl;
+            std::cout << std::endl << "ERROR 2: Activation function must be Logistic, ReLU or Tanh." << std::endl;
             std::cout << "Activation function is " << str << "." << std::endl;
-            exit(1);
+            exit(2);
         }
     }
     neural_matrix[network_position + 1] = sum_matrix;
