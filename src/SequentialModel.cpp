@@ -25,12 +25,14 @@ SequentialModel::SequentialModel(int input_s){
 // Destructor
 SequentialModel::~SequentialModel(){}
 
+
 // Seters
 /*
 void SequentialModel::SetLayersNbr(int l){layers_nbr = l;};
 void SequentialModel::SetNeuralMatrix(std::vector<std::vector<double>> n){neural_matrix = n;};
 void SequentialModel::SetActivationFuntionMatrix(std::vector<std::string> a){activation_functions_matrix = a;};
 */
+
 void SequentialModel::SetLossFunction(std::string l){
     try{
         if(l == "mean_squared" || l == "binary_cross_entropy" || l == "hinge")
@@ -47,15 +49,27 @@ void SequentialModel::SetLossFunction(std::string l){
 
 void SequentialModel::SetLearningRate(double lr){learning_rate = lr;}
 
+
 // Geters
 int SequentialModel::GetLayerNbr(){return layers_nbr;}
 std::vector<std::vector<double>> SequentialModel::GetNeuralMatrix(){return neural_matrix;}
 std::vector<std::string> SequentialModel::GetActivationFunctionMatrix(){return activation_functions_matrix;}
 int SequentialModel::GetInputSize(){return input_size;}
 
+
 // Methods
 std::vector<std::vector<double>> SequentialModel::MatrixMultiplication(std::vector<std::vector<double>> first_matrix, std::vector<std::vector<double>> second_matrix){
-    /*mn * nk = mk*/
+    /*
+    Performe a matrix multiplication  (mn * nk = mk).
+
+    Parameters:
+        - first_matrix: a 2 dimension vector of double.
+        - second_matrix: a 2 dimension vector of double.
+
+    Returns:
+        - result_matrix: result of the matrix multiplication of first_matrix and second_matrix.
+    */
+
     int first_matrix_rows_num = first_matrix.size();
     int first_matrix_columns_num = first_matrix[0].size();
     int second_matrix_rows_num = second_matrix.size();
@@ -74,7 +88,18 @@ std::vector<std::vector<double>> SequentialModel::MatrixMultiplication(std::vect
     return result_matrix;
 }
 
+
 std::vector<std::vector<double>> SequentialModel::MatrixTransposition(std::vector<std::vector<double>> matrix){
+    /*
+    Transpose a matrix.
+
+    Parameters:
+        - matrix: a 2 dimension vector of double.
+    
+    Returns:
+        - transposed: the transposed version of the matrix.
+    */
+   
     int row_size = matrix.size();
     int col_size = matrix[0].size();
     std::vector<std::vector<double>> transposed(col_size, std::vector<double>(row_size));
@@ -88,7 +113,15 @@ std::vector<std::vector<double>> SequentialModel::MatrixTransposition(std::vecto
     return transposed;
 }
 
+
 double SequentialModel::NormalDistribution(){
+    /*
+    Create a normal distribution random double generator 
+
+    Returns:
+        - distribution(generator): a normal distribution random double generator
+    */
+
     std::default_random_engine generator(time(0));
     std::normal_distribution<double> distribution(0.0,1.0);
 
@@ -96,6 +129,13 @@ double SequentialModel::NormalDistribution(){
 }
 
 void SequentialModel::ForwardPropagation(int network_position){
+    /*
+    Perform forward propagation for one layer of the neural network.
+
+    Parameters:
+        - network_position: integer indicating at which layer of the neural network forward propagation must be performed.
+    */
+
     ActivationFunctions function; 
     std::string activation_function = activation_functions_matrix[network_position];
     double sum = 0.0;
@@ -138,6 +178,15 @@ void SequentialModel::ForwardPropagation(int network_position){
 void SequentialModel::BackwardPropagation(double label,
                                           std::vector<std::vector<double>> test_set,
                                           std::vector<double> labels_test_set){
+    /*
+    Perform the back propagation on the neural network
+
+    Parameters:
+        - label: ground truth of the input given in the previous forward propagation
+        - test_set: test dataset used to evaluate the neural network with the current weights.
+        - labels_test_set: labels of the test dataset used to evaluate the neural network with the current weights.
+
+    */
     LossFunctions function;
     ActivationFunctions ActivationFunctions;
     std::vector<double> outputs = neural_matrix.back();
@@ -207,6 +256,17 @@ void SequentialModel::BackwardPropagation(double label,
 
 double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
                                      std::vector<double> test_labels_set){
+    /*
+    Compute different metrics to evaluate the model.
+
+    Parameters:
+        - test_set: test dataset used to evaluate the model.
+        - labels_test_set: labels of the test dataset used to evaluate the model.
+
+    Returns:
+        - accuracy: return the accuracy obtained by the model on the test set.
+    */
+
     int correct_prediction = 0;
     double accuracy;
     double precision;
@@ -258,6 +318,14 @@ double SequentialModel::TestAccuracy(std::vector<std::vector<double>> test_set,
 
 
 void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function){
+    /*
+    Add a layer in the neural network.
+
+    Parameters:
+        - neurrons_nbr: number of neurones in the new layer.
+        - activation_function: activation function of the neurons in the new layer.
+    */
+
     std::vector<double> neurons(neurons_nbr, 0);
     std::vector<std::vector<double>> synapses; // Shape = (neurons_nbr, neurons_nbr)
 
@@ -286,6 +354,10 @@ void SequentialModel::AddLayer(int neurons_nbr, std::string activation_function)
 }
 
 void SequentialModel::UniDistribInit(){
+    /*
+    Initiate the weights of the neural network with an uniform distribution between -1 and 1.
+    */
+
     std::random_device rd;
     std::mt19937 generator(rd());
     std::uniform_real_distribution<double> distribution(-1.0, 1.0);
@@ -304,6 +376,9 @@ void SequentialModel::UniDistribInit(){
 }
 
 void SequentialModel::HeInit(){
+    /*
+    Initiate the weights of the neural network with an uniform distribution between 1 and the scale of the input.
+    */
     double scale = sqrt(2.0 / input_size);
     std::random_device rd;
     std::mt19937 generator(rd());
@@ -326,7 +401,17 @@ void SequentialModel::HeInit(){
 void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::vector<double> train_labels_set,
                             std::vector<std::vector<double>> test_set, std::vector<double> test_labels_set,
                             int epochs, unsigned int early_stopping){
-    
+    /*
+    Train the neural network.
+
+    Parameters:
+        - training_set: dataset containing the inputs used to train the neural network.
+        - train_labels_set: dataset containing the ground truth of the inputs in the training dataset. 
+        - test_set: dataset containing the inputs used to test the neural network.
+        - test_labels_set: dataset containing the ground truth of the inputs in the testing dataset.
+        - epochs: number of training iteration of the neural network.
+        - early_stopping: maximum number of training iteration without performances improvement accepted before stopping the training.
+    */
     int stopping_range = 0;
 
     if(epochs == 0){
@@ -364,12 +449,22 @@ void SequentialModel::Train(std::vector<std::vector<double>> training_set, std::
 }
 
 double SequentialModel::Predict(std::vector<double> input){
+    /*
+    Performe a prediction.
+
+    Parameters:
+        - input: input data.
+
+    Returns:
+        - neural_matrix.back(): output of the neural network.
+    */
+
     neural_matrix[0] = input;
 
     for(int j = 0; j < neural_matrix.size() - 1; j++){
         ForwardPropagation(j);
     }
-
+    // ICI modifier la prediction
     return neural_matrix.back()[0];
 }
 
